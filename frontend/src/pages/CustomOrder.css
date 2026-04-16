@@ -1,0 +1,142 @@
+.custom-order-page {
+  padding: 4rem 0;
+}
+
+.custom-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+}
+
+.custom-info .page-title {
+  font-size: 3.5rem;
+  color: var(--primary-dark);
+  margin-bottom: 1rem;
+}
+
+.custom-info .page-desc {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  margin-bottom: 3rem;
+  line-height: 1.8;
+}
+
+.custom-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: var(--secondary-light);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+}
+
+.step-num {
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary);
+  color: var(--text-dark);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-accent);
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step p {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.custom-form-wrapper {
+  background-color: var(--white);
+  padding: 2.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--primary-light);
+}
+
+.custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.text-light {
+  font-weight: 400;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.form-group input:not(.hidden-input),
+.form-group select,
+.form-group textarea {
+  padding: 12px 16px;
+  border: 1px solid var(--secondary);
+  border-radius: var(--radius-sm);
+  background-color: var(--background);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  background-color: var(--white);
+}
+
+.file-upload-group {
+  margin-top: 1rem;
+}
+
+.file-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius-md);
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.file-upload-label:hover {
+  background-color: var(--primary);
+  color: var(--text-dark);
+}
+
+.hidden-input {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .custom-container {
+    grid-template-columns: 1fr 1.2fr;
+  }
+}

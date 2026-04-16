@@ -1,0 +1,134 @@
+.product-detail-page {
+  padding: 4rem 0;
+}
+
+.p-detail-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+.main-img-wrapper {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  background-color: var(--secondary-light);
+  aspect-ratio: 1;
+}
+
+.main-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.p-detail-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.p-title {
+  font-size: 2.5rem;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.p-price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 1.5rem;
+}
+
+.p-desc {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+
+.p-timeline {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--text-dark);
+  font-weight: 500;
+  padding: 1rem;
+  background-color: var(--secondary-light);
+  border-radius: var(--radius-sm);
+  margin-bottom: 2rem;
+}
+
+.p-icon {
+  color: var(--primary-dark);
+}
+
+/* Gift Mode */
+.gift-mode-section {
+  background-color: var(--primary-light);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 2rem;
+  transition: var(--transition);
+}
+
+.gift-mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.gift-mode-toggle input {
+  accent-color: var(--primary-dark);
+  width: 18px;
+  height: 18px;
+}
+
+.gift-note-input {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary);
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.gift-note-input:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+}
+
+.w-100 {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+}
+
+.p-trust {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  border-top: 1px solid var(--secondary);
+  padding-top: 2rem;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+@media (min-width: 768px) {
+  .p-detail-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}

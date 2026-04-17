@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import API_BASE_URL from '../config/api';
 import './Admin.css';
-import { LayoutDashboard, ShoppingBag, Palette, Users, Settings, TrendingUp, DollarSign, Package, UserCheck, Plus, Minus, Edit3, Trash2 } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Palette, Users, Settings, TrendingUp, DollarSign, Package, UserCheck, Plus, Minus, Pencil, Trash2 } from 'lucide-react';
 
 function Admin() {
   const [products, setProducts] = useState([]);
@@ -421,13 +421,13 @@ function Admin() {
                                     </div>
                                   </td>
                                   <td>
-                                    <button 
-                                      onClick={() => handleEditProduct(p)}
-                                      className="icon-btn edit-btn"
-                                      title="Refine Treasure"
-                                    >
-                                      <Edit3 size={16} />
-                                    </button>
+                                  <button 
+                                    onClick={() => handleEditProduct(p)}
+                                    className="icon-btn edit-btn"
+                                    title="Refine Treasure"
+                                  >
+                                    <Pencil size={16} />
+                                  </button>
                                     <button 
                                       onClick={() => handleDeleteProduct(p._id)}
                                       className="icon-btn delete-btn"

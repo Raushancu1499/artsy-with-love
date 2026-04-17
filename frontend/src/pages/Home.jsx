@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Home.css';
 
 function Home() {
+  const { isAdmin } = useAuth();
+
   return (
     <div className="home-page">
       {/* Hero Section */}
@@ -16,7 +19,7 @@ function Home() {
             </p>
             <div className="hero-actions">
               <Link to="/products" className="btn btn-primary">Shop Collection</Link>
-              <Link to="/custom-order" className="btn btn-outline">Request Custom Gift</Link>
+              {!isAdmin && <Link to="/custom-order" className="btn btn-outline">Request Custom Gift</Link>}
             </div>
           </div>
           <div className="hero-image-wrapper">
@@ -68,7 +71,7 @@ function Home() {
                 Every order is carefully packaged with tissue paper, a custom note, and a whole lot of intention. 
                 Whether it's for a newborn, a partner, or yourself, we make sure the unboxing is as beautiful as the gift itself.
               </p>
-              <Link to="/custom-order" className="btn btn-primary" style={{marginTop: '30px'}}>Create a Custom Request</Link>
+              {!isAdmin && <Link to="/custom-order" className="btn btn-primary" style={{marginTop: '30px'}}>Create a Custom Request</Link>}
             </div>
           </div>
         </div>

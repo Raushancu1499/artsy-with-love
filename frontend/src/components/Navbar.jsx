@@ -33,7 +33,7 @@ function Navbar() {
         <div className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/products">Shop</Link>
-          <Link to="/custom-order">Custom Gifts</Link>
+          {!isAdmin && <Link to="/custom-order">Custom Gifts</Link>}
           <Link to="/about">Our Story</Link>
         </div>
 

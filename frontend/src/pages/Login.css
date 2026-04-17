@@ -1,94 +1,193 @@
-.login-page {
-  min-height: 80vh;
+.login-wrapper {
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
-  padding: 2rem;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.login-split {
+  display: flex;
+  width: 100%;
+  max-width: 1400px;
+  min-height: 800px;
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  margin: 2rem;
+  border-radius: 4px; /* Professional sharp-meets-soft look */
+  overflow: hidden;
+}
+
+/* --- Left Side: Hero Section --- */
+.login-hero-section {
+  flex: 1.2;
+  position: relative;
+  display: none; /* Hidden on mobile */
+}
+
+@media (min-width: 992px) {
+  .login-hero-section {
+    display: block;
+  }
+}
+
+.login-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.9);
+}
+
+.login-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+  display: flex;
+  align-items: flex-end;
+  padding: 4rem;
+}
+
+.hero-content {
+  color: #fff;
+}
+
+.hero-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent);
+}
+
+.hero-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  line-height: 1.1;
+  max-width: 400px;
+}
+
+/* --- Right Side: Form Section --- */
+.login-form-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  background: #fffafa; /* Very soft cream warm tint */
 }
 
 .login-card {
-  max-width: 450px;
   width: 100%;
-  padding: 3rem;
-  text-align: center;
-  border: 1px solid rgba(255, 182, 193, 0.2);
-  border-radius: 8px; /* High-end sharp corner look */
+  max-width: 400px;
 }
 
 .login-card h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   margin-bottom: 0.5rem;
-  color: var(--text-dark);
+  color: #1a1a1a;
 }
 
 .subtitle {
-  color: var(--text-light);
-  margin-bottom: 2.5rem;
-  font-style: italic;
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 3rem;
+  line-height: 1.6;
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  text-align: left;
+  gap: 2rem;
 }
 
-.form-group label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 0.5rem;
-  color: var(--text-light);
+/* --- Floating Labels --- */
+.form-group.floating {
+  position: relative;
 }
 
-.form-group input {
+.form-group.floating input {
   width: 100%;
-  padding: 0.8rem 1rem;
-  border: 1px solid #eee;
-  border-radius: 4px;
+  padding: 1rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #ddd;
   font-size: 1rem;
   transition: border-color 0.3s ease;
 }
 
-.form-group input:focus {
+.form-group.floating label {
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  font-size: 0.9rem;
+  color: #999;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.form-group.floating input:focus,
+.form-group.floating input:not(:placeholder-shown) {
+  border-bottom-color: var(--accent);
   outline: none;
-  border-color: var(--accent);
+}
+
+.form-group.floating input:focus + label,
+.form-group.floating input:not(:placeholder-shown) + label {
+  top: -1rem;
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .auth-btn {
-  width: 100%;
-  padding: 1rem;
   margin-top: 1rem;
-  text-transform: uppercase;
+  padding: 1.2rem;
+  font-weight: 700;
   letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
 .toggle-auth {
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   font-size: 0.9rem;
-  color: var(--text-light);
+  color: #888;
+  text-align: center;
 }
 
 .toggle-auth button {
   background: none;
   border: none;
-  color: var(--accent);
-  font-weight: 600;
+  color: #1a1a1a;
+  font-weight: 700;
   margin-left: 0.5rem;
   cursor: pointer;
-  text-decoration: underline;
+  border-bottom: 1px solid #1a1a1a;
+  padding-bottom: 2px;
 }
 
-.auth-error {
-  background: #fff0f0;
-  color: #d32f2f;
-  padding: 0.8rem;
+.auth-message {
+  padding: 1rem;
   border-radius: 4px;
   font-size: 0.9rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.auth-message.error {
+  background: #fff0f0;
+  color: #c62828;
+  border-left: 4px solid #c62828;
+}
+
+.auth-message.success {
+  background: #f0fff4;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
 }

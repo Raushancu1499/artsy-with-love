@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API_BASE_URL from '../config/api';
 import './Login.css';
+import loginHero from '../assets/login-hero.png';
 
 function Login() {
   const [isRegister, setIsRegister] = useState(false);
@@ -44,7 +45,7 @@ function Login() {
         navigate(from, { replace: true });
       } else {
         setIsRegister(false);
-        setError('Account created! Please login.');
+        setError('Success! Your account is ready. Please login.');
       }
     } catch (err) {
       setError(err.message);
@@ -54,62 +55,78 @@ function Login() {
   };
 
   return (
-    <div className="login-page">
-      <div className="container login-container">
-        <div className="login-card glass-card">
-          <h1>{isRegister ? 'Join Artsy' : 'Welcome Back'}</h1>
-          <p className="subtitle">Your artisanal journey continues here.</p>
+    <div className="login-wrapper">
+      <div className="login-split">
+        {/* Left Side: Editorial Image */}
+        <div className="login-hero-section">
+          <img src={loginHero} alt="Artsy Editorial" className="login-hero-img" />
+          <div className="login-hero-overlay">
+            <div className="hero-content">
+              <span className="hero-tag">Handmade with Love</span>
+              <h2>A world of artisanal wonder awaits.</h2>
+            </div>
+          </div>
+        </div>
 
-          {error && <div className="auth-error">{error}</div>}
+        {/* Right Side: Form */}
+        <div className="login-form-section">
+          <div className="login-card glass-card">
+            <h1>{isRegister ? 'Join the Circle' : 'Welcome Back'}</h1>
+            <p className="subtitle">
+              {isRegister ? 'Create your account to start your journey.' : 'Signin to manage your artisanal collection.'}
+            </p>
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            {isRegister && (
-              <div className="form-group">
-                <label>Full Name</label>
+            {error && <div className={`auth-message ${error.includes('Success') ? 'success' : 'error'}`}>{error}</div>}
+
+            <form onSubmit={handleSubmit} className="auth-form">
+              {isRegister && (
+                <div className="form-group floating">
+                  <input 
+                    type="text" 
+                    name="name" 
+                    required 
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder=" "
+                  />
+                  <label>Full Name</label>
+                </div>
+              )}
+              <div className="form-group floating">
                 <input 
-                  type="text" 
-                  name="name" 
-                  placeholder="Artsy Member" 
+                  type="email" 
+                  name="email" 
                   required 
-                  value={formData.name}
+                  value={formData.email}
                   onChange={handleChange}
+                  placeholder=" "
                 />
+                <label>Email Address</label>
               </div>
-            )}
-            <div className="form-group">
-              <label>Email Address</label>
-              <input 
-                type="email" 
-                name="email" 
-                placeholder="hello@artsy.com" 
-                required 
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Password</label>
-              <input 
-                type="password" 
-                name="password" 
-                placeholder="••••••••" 
-                required 
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+              <div className="form-group floating">
+                <input 
+                  type="password" 
+                  name="password" 
+                  required 
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder=" "
+                />
+                <label>Password</label>
+              </div>
 
-            <button type="submit" className="btn btn-primary auth-btn" disabled={loading}>
-              {loading ? 'Processing...' : (isRegister ? 'Create Account' : 'Login')}
-            </button>
-          </form>
+              <button type="submit" className="btn btn-primary auth-btn" disabled={loading}>
+                {loading ? 'Finalizing...' : (isRegister ? 'Begin My Journey' : 'Step Inside')}
+              </button>
+            </form>
 
-          <p className="toggle-auth">
-            {isRegister ? 'Already have an account?' : "Don't have an account?"}
-            <button onClick={() => setIsRegister(!isRegister)}>
-              {isRegister ? 'Login instead' : 'Create one now'}
-            </button>
-          </p>
+            <p className="toggle-auth">
+              {isRegister ? 'Already a member?' : "New to Artsy With Love?"}
+              <button onClick={() => setIsRegister(!isRegister)}>
+                {isRegister ? 'Sign In' : 'Create an Account'}
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>

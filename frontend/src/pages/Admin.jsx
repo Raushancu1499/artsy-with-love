@@ -52,25 +52,29 @@ function Admin() {
       description: form.description.value,
       price: Number(form.price.value),
       type: form.type.value,
-      category: form.category.value,
+      category: isAddingNewCategory ? newCategoryName : form.category.value,
       images: [form.image.value || 'https://via.placeholder.com/600x600?text=Artsy+Product']
     };
-
+    
     try {
       const token = localStorage.getItem('artsy_token');
       const res = await fetch(`${API_BASE_URL}/api/products`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(newProduct)
       });
-      if(res.ok) alert("Product added successfully!");
-      form.reset();
-      fetchStats();
-    } catch(err) {
-      alert("Failed to add product!");
+      if (res.ok) {
+        alert('Product published successfully!');
+        form.reset();
+        setNewCategoryName('');
+        setIsAddingNewCategory(false);
+        fetchStats();
+      }
+    } catch (err) {
+      console.error('Failed to add product', err);
     }
   };
 
@@ -200,11 +204,37 @@ function Admin() {
                       <option value="fixed">Fixed Price</option>
                       <option value="custom">Custom Quote</option>
                     </select>
-                    <select name="category" className="admin-input">
-                      <option value="Flowers">Flowers</option>
-                      <option value="Soft Toys">Soft Toys</option>
-                      <option value="Keychains">Keychains</option>
-                    </select>
+                    <div className="form-group">
+                      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
+                        <label className="metric-label">Category</label>
+                        <button 
+                          type="button" 
+                          className="btn-link" 
+                          style={{fontSize: '0.7rem'}}
+                          onClick={() => setIsAddingNewCategory(!isAddingNewCategory)}
+                        >
+                          {isAddingNewCategory ? '← Back to list' : '+ Add New'}
+                        </button>
+                      </div>
+                      {isAddingNewCategory ? (
+                        <input 
+                          type="text" 
+                          name="customCategory"
+                          className="admin-input" 
+                          placeholder="e.g. Wall Hangings"
+                          value={newCategoryName}
+                          onChange={(e) => setNewCategoryName(e.target.value)}
+                          required
+                        />
+                      ) : (
+                        <select name="category" className="admin-input" required>
+                          <option value="Flowers">Flowers</option>
+                          <option value="Soft Toys">Soft Toys</option>
+                          <option value="Keychains">Keychains</option>
+                          <option value="Combos">Combos</option>
+                        </select>
+                      )}
+                    </div>
                     <textarea name="description" placeholder="Product Story / Description" required className="admin-input" style={{gridColumn: 'span 2'}}></textarea>
                     <input name="image" placeholder="Image URL" className="admin-input" style={{gridColumn: 'span 2'}} />
                   </div>

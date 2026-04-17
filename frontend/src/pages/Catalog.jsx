@@ -25,7 +25,7 @@ function Catalog() {
       });
   }, []);
 
-  const categories = ['All', 'Soft Toys', 'Flowers', 'Keychains', 'Combos'];
+  const categories = ['All', ...new Set(products.map(p => p.category))];
 
   const filteredProducts = products.filter(p => {
     const matchesCategory = category === 'All' || p.category === category;

@@ -4,6 +4,13 @@
 
 ---
 
+## 🌐 Live Production
+Explore the live marketplace and the management engine:
+- **Frontend (Vercel):** [https://artsy-with-love.vercel.app](https://artsy-with-love.vercel.app)
+- **Backend (Render):** [https://artsy-with-love-backend.onrender.com](https://artsy-with-love-backend.onrender.com) (API Entry Point)
+
+---
+
 ## 🚀 Quick Start Guide
 
 ### 1. Local Development (Standard)

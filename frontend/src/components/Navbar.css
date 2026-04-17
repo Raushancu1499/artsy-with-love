@@ -195,3 +195,30 @@
   from { opacity: 0; transform: translateX(20px); width: 0; }
   to { opacity: 1; transform: translateX(0); width: auto; }
 }
+
+/* --- New Login Link Styling --- */
+.login-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 0.4rem 0.8rem;
+  border-radius: 100px;
+}
+
+.login-nav-link:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.login-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-dark);
+}
+
+.login-nav-link:hover .login-text {
+  color: var(--primary-dark);
+}

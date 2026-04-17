@@ -87,8 +87,9 @@ function Navbar() {
               </button>
             </div>
           ) : (
-            <Link to="/login" className="icon-btn" aria-label="Login">
+            <Link to="/login" className="icon-btn login-nav-link" aria-label="Login">
               <User size={22} />
+              <span className="login-text">Login</span>
             </Link>
           )}
         </div>

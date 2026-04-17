@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import API_BASE_URL from '../config/api';
 import './Admin.css';
-import { LayoutDashboard, ShoppingBag, Palette, Users, Settings, TrendingUp, DollarSign, Package, UserCheck, Plus, Minus } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Palette, Users, Settings, TrendingUp, DollarSign, Package, UserCheck, Plus, Minus, Edit3, Trash2 } from 'lucide-react';
 
 function Admin() {
   const [products, setProducts] = useState([]);

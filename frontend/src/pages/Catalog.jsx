@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import API_BASE_URL from '../config/api';
 import './Catalog.css';
 
 function Catalog() {
+  const [searchParams] = useSearchParams();
   const [category, setCategory] = useState('All');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const searchQuery = searchParams.get('q') || '';
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/products`)
@@ -23,9 +27,12 @@ function Catalog() {
 
   const categories = ['All', 'Soft Toys', 'Flowers', 'Keychains', 'Combos'];
 
-  const filteredProducts = category === 'All' 
-    ? products 
-    : products.filter(p => p.category === category);
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = category === 'All' || p.category === category;
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="catalog-page">

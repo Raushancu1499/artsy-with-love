@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, Heart, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { ShoppingBag, Search, Menu, Heart, User, LogOut, LayoutDashboard, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
@@ -7,7 +8,20 @@ import './Navbar.css';
 function Navbar() {
   const { getCartCount } = useCart();
   const { isAuthenticated, user, logout, isAdmin } = useAuth();
-  
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+
+  const handleSearch = (e) => {
+    const q = e.target.value;
+    setSearchQuery(q);
+    if (q.trim()) {
+      navigate(`/products?q=${encodeURIComponent(q)}`);
+    } else {
+      navigate('/products');
+    }
+  };
   return (
     <nav className="navbar glass-nav">
       {isAdmin && (
@@ -38,9 +52,25 @@ function Navbar() {
         </div>
 
         <div className="nav-actions">
-          <button className="icon-btn" aria-label="Search">
-            <Search size={22} />
-          </button>
+          {isSearchOpen ? (
+            <div className="search-group animate-slide-in">
+              <input 
+                type="text" 
+                placeholder="Search treasures..." 
+                className="nav-search-input"
+                autoFocus
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+              <button className="icon-btn" onClick={() => setIsSearchOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+          ) : (
+            <button className="icon-btn" onClick={() => setIsSearchOpen(true)} aria-label="Search">
+              <Search size={22} />
+            </button>
+          )}
           <Link to="/cart" className="icon-btn cart-btn">
             <ShoppingBag size={22} />
             {getCartCount() > 0 && <span className="cart-badge">{getCartCount()}</span>}

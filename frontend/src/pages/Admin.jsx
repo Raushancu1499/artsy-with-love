@@ -303,75 +303,94 @@ function Admin() {
               </div>
 
               {productSubTab === 'marketplace' ? (
-                /* FULL WIDTH MARKETPLACE LIST */
+                /* CATEGORIZED MARKETPLACE LIST */
                 <div className="admin-inventory-full animate-fade-in">
-                  <div className="table-container premium-card">
-                    <table className="premium-table">
-                      <thead>
-                        <tr>
-                          <th>Item Details</th>
-                          <th>Category</th>
-                          <th>Price</th>
-                          <th>Stock Status</th>
-                          <th>Controls</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {products.length > 0 ? products.map(p => (
-                          <tr key={p._id}>
-                            <td className="product-table-cell">
-                              <div className="item-preview">
-                                <img src={p.images?.[0]} alt={p.name} className="table-thumb" />
-                                <div className="table-info">
-                                  <span className="p-name">{p.name}</span>
-                                  <span className="p-id">{p._id.slice(-6).toUpperCase()}</span>
-                                </div>
-                              </div>
-                            </td>
-                            <td><span className="pill pill-role">{p.category}</span></td>
-                            <td><span className="price-tag">₹{p.price}</span></td>
-                            <td>
-                              <div className="qty-control">
-                                <button 
-                                  className="qty-btn" 
-                                  onClick={() => handleUpdateStock(p._id, p.stock, -1)}
-                                  disabled={p.stock === 0}
-                                  title="Decrease Stock"
-                                >
-                                  <Minus size={14} />
-                                </button>
-                                <span className={`pill stock-pill ${p.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                                  {p.stock > 0 ? `${p.stock} Available` : 'Sold Out'}
-                                </span>
-                                <button 
-                                  className="qty-btn" 
-                                  onClick={() => handleUpdateStock(p._id, p.stock, 1)}
-                                  title="Increase Stock"
-                                >
-                                  <Plus size={14} />
-                                </button>
-                              </div>
-                            </td>
-                            <td>
-                              <button 
-                                onClick={() => handleDeleteProduct(p._id)}
-                                className="icon-btn delete-btn"
-                                title="Retire Treasure"
-                              >
-                                🗑️
-                              </button>
-                            </td>
-                          </tr>
-                        )) : (
-                          <tr>
-                            <td colSpan="5" style={{textAlign: 'center', padding: '5rem'}}>
-                              {loading ? 'Consulting the archive...' : 'The marketplace is currently empty.'}
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                  {Object.keys(products.reduce((acc, p) => {
+                    const cat = p.category || 'Uncategorized';
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(p);
+                    return acc;
+                  }, {})).length > 0 ? Object.keys(products.reduce((acc, p) => {
+                    const cat = p.category || 'Uncategorized';
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(p);
+                    return acc;
+                  }, {})).map(category => {
+                    const categoryItems = products.filter(p => p.category === category);
+                    return (
+                      <div key={category} className="category-section">
+                        <div className="category-section-header">
+                          <h3 className="category-title">{category}</h3>
+                          <span className="category-count">{categoryItems.length} Treasures</span>
+                        </div>
+                        <div className="table-container premium-card">
+                          <table className="premium-table">
+                            <thead>
+                              <tr>
+                                <th>Item Details</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock Status</th>
+                                <th>Controls</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {categoryItems.map(p => (
+                                <tr key={p._id}>
+                                  <td className="product-table-cell">
+                                    <div className="item-preview">
+                                      <img src={p.images?.[0]} alt={p.name} className="table-thumb" />
+                                      <div className="table-info">
+                                        <span className="p-name">{p.name}</span>
+                                        <span className="p-id">{p._id.slice(-6).toUpperCase()}</span>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td><span className="pill pill-role">{p.category}</span></td>
+                                  <td><span className="price-tag">₹{p.price}</span></td>
+                                  <td>
+                                    <div className="qty-control">
+                                      <button 
+                                        className="qty-btn" 
+                                        onClick={() => handleUpdateStock(p._id, p.stock, -1)}
+                                        disabled={p.stock === 0}
+                                        title="Decrease Stock"
+                                      >
+                                        <Minus size={14} />
+                                      </button>
+                                      <span className={`pill stock-pill ${p.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                                        {p.stock > 0 ? `${p.stock} Available` : 'Sold Out'}
+                                      </span>
+                                      <button 
+                                        className="qty-btn" 
+                                        onClick={() => handleUpdateStock(p._id, p.stock, 1)}
+                                        title="Increase Stock"
+                                      >
+                                        <Plus size={14} />
+                                      </button>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <button 
+                                      onClick={() => handleDeleteProduct(p._id)}
+                                      className="icon-btn delete-btn"
+                                      title="Retire Treasure"
+                                    >
+                                      🗑️
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    );
+                  }) : (
+                    <div className="empty-marketplace">
+                      {loading ? 'Consulting the archive...' : 'The marketplace is currently empty.'}
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* FULL WIDTH ADD PRODUCT FORM */

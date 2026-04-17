@@ -20,6 +20,64 @@ function Admin() {
     if (activeTab === 'products') fetchProducts();
   }, [activeTab]);
 
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem('artsy_token');
+      const res = await fetch(`${API_BASE_URL}/api/admin/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setStats(data);
+    } catch (err) {
+      console.error("Failed to fetch stats", err);
+    }
+  };
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/products`);
+      const data = await res.json();
+      setProducts(data);
+    } catch (err) {
+      console.error("Failed to fetch products", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const token = localStorage.getItem('artsy_token');
+      const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setCustomers(data);
+    } catch (err) {
+      console.error("Failed to fetch customers", err);
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (!window.confirm("Are you sure you want to retire this treasure? This action is permanent.")) return;
+    
+    try {
+      const token = localStorage.getItem('artsy_token');
+      const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setProducts(products.filter(p => p._id !== id));
+        fetchStats(); 
+        alert('✨ Treasure retired successfully!');
+      }
+    } catch (err) {
+      console.error("Failed to delete product", err);
+    }
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;

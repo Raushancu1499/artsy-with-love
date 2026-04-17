@@ -47,6 +47,18 @@ router.get('/products', async (req, res) => {
   }
 });
 
+// Get unique categories and their representative images
+router.get('/categories', async (req, res) => {
+  try {
+    const categoriesRoot = await Product.aggregate([
+      { $group: { _id: "$category", image: { $first: { $arrayElemAt: ["$images", 0] } } } }
+    ]);
+    res.json(categoriesRoot.map(c => ({ name: c._id, image: c.image })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
 // Create product (Admin Only)
 router.post('/products', verifyToken, isAdmin, async (req, res) => {
   try {

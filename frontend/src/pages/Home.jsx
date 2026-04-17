@@ -1,9 +1,26 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import API_BASE_URL from '../config/api';
 import './Home.css';
 
 function Home() {
   const { isAdmin } = useAuth();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/categories`)
+      .then(res => res.json())
+      .then(data => {
+        setCategories(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch home categories", err);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="home-page">
@@ -38,22 +55,23 @@ function Home() {
           <h2 className="section-title text-accent">Shop by Category</h2>
           <p style={{marginBottom: '3rem', color: 'var(--text-light)'}}>Explore our handcrafted collections</p>
           <div className="category-grid">
-            <Link to="/products?category=Soft Toys" className="category-card">
-              <div className="category-img"><img src="/assets/images/cat-toys.png" alt="Soft Toys" /></div>
-              <h3>Soft Toys</h3>
-            </Link>
-            <Link to="/products?category=Flowers" className="category-card">
-              <div className="category-img"><img src="/assets/images/cat-flowers.png" alt="Flowers" /></div>
-              <h3>Flowers</h3>
-            </Link>
-            <Link to="/products?category=Keychains" className="category-card">
-              <div className="category-img"><img src="/assets/images/cat-keychains.png" alt="Keychains" /></div>
-              <h3>Keychains</h3>
-            </Link>
-            <Link to="/products?category=Gift Combos" className="category-card">
-              <div className="category-img"><img src="/assets/images/cat-combos.png" alt="Gift Combos" /></div>
-              <h3>Gift Combos</h3>
-            </Link>
+            {loading ? (
+              <p>Curating collections...</p>
+            ) : categories.length > 0 ? (
+              categories.map(cat => (
+                <Link key={cat.name} to={`/products?category=${cat.name}`} className="category-card">
+                  <div className="category-img">
+                    <img 
+                      src={cat.image || '/assets/images/cat-flowers.png'} 
+                      alt={cat.name} 
+                    />
+                  </div>
+                  <h3>{cat.name}</h3>
+                </Link>
+              ))
+            ) : (
+              <p>Our artisan collections are warming up!</p>
+            )}
           </div>
         </div>
       </section>

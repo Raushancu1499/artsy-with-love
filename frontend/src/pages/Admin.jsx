@@ -79,8 +79,8 @@ function Admin() {
       <div className="container admin-container">
         <aside className="admin-sidebar">
           <div className="sidebar-header">
-            <h2>Admin Panel</h2>
-            <p>Boutique Management</p>
+            <h2 className="brand-accent">Artsy Panel</h2>
+            <p>Admin Command</p>
           </div>
           <ul className="admin-nav">
             <li><button className={`admin-nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}><LayoutDashboard size={18} /> Dashboard</button></li>
@@ -94,10 +94,10 @@ function Admin() {
         <main className="admin-content">
           {/* --- DASHBOARD TAB --- */}
           {activeTab === 'dashboard' && (
-            <div className="dashboard-view">
+            <div className="dashboard-view animate-fade-in">
               <div className="admin-header">
-                <h1>Business Insights</h1>
-                <p>Overview of your boutique's performance.</p>
+                <h1 className="editorial-title">Business Insights</h1>
+                <p>Real-time analytics for Artsy With Love.</p>
               </div>
               
               <div className="metrics-grid">
@@ -216,14 +216,14 @@ function Admin() {
 
           {/* --- CUSTOMERS TAB --- */}
           {activeTab === 'customers' && (
-            <div className="customers-view">
+            <div className="customers-view animate-fade-in">
               <div className="admin-header">
-                <h1>Customer Directory</h1>
-                <p>Manage your registered clientele.</p>
+                <h1 className="editorial-title">Clientele</h1>
+                <p>Management of your registered customer base.</p>
               </div>
               
-              <div className="table-responsive">
-                <table className="admin-table">
+              <div className="table-container premium-card">
+                <table className="premium-table">
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -238,8 +238,8 @@ function Admin() {
                       <tr key={user._id}>
                         <td>{user.name}</td>
                         <td>{user.email}</td>
-                        <td><span className="badge badge-new">{user.role}</span></td>
-                        <td><span className="status-badge status-progress">Active</span></td>
+                        <td><span className="pill pill-role">{user.role}</span></td>
+                        <td><span className="pill pill-status active">Active</span></td>
                         <td><button className="btn-link">View Orders</button></td>
                       </tr>
                     )) : (

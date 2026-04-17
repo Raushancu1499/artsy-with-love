@@ -265,12 +265,11 @@ function Admin() {
                                 type="file" 
                                 id="product-photo" 
                                 accept="image/*" 
-                                capture="environment"
                                 onChange={handleImageUpload} 
                                 style={{display: 'none'}} 
                               />
                               <label htmlFor="product-photo" className="upload-label">
-                                {isUploading ? '📤 Consulting the Cloud...' : '📸 Snap or Choice Photo'}
+                                {isUploading ? '📤 Consulting the Cloud...' : '📸 Choose from Gallery or Files'}
                               </label>
                               <div style={{marginTop: '0.8rem', fontSize: '0.7rem', color: '#999'}}>
                                 Or paste a link: 

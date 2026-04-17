@@ -11,6 +11,8 @@ function Admin() {
   const [loading, setLoading] = useState(false);
   const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [tempImageUrl, setTempImageUrl] = useState('');
 
   useEffect(() => {
     if (activeTab === 'dashboard') fetchStats();
@@ -18,60 +20,48 @@ function Admin() {
     if (activeTab === 'products') fetchProducts();
   }, [activeTab]);
 
-  const fetchStats = async () => {
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('image', file);
+
     try {
       const token = localStorage.getItem('artsy_token');
-      const res = await fetch(`${API_BASE_URL}/api/admin/stats`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const res = await fetch(`${API_BASE_URL}/api/upload`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
       });
       const data = await res.json();
-      setStats(data);
-    } catch (err) {
-      console.error("Failed to fetch stats", err);
-    }
-  };
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/products`);
-      const data = await res.json();
-      setProducts(data);
-    } catch (err) {
-      console.error("Failed to fetch products", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteProduct = async (id) => {
-    if (!window.confirm("Are you sure you want to retire this treasure? This action is permanent.")) return;
-    
-    try {
-      const token = localStorage.getItem('artsy_token');
-      const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        setProducts(products.filter(p => p._id !== id));
-        fetchStats(); // Update the count metric
+      if (data.secure_url) {
+        setTempImageUrl(data.secure_url);
+        alert('✨ Photo captured and uploaded successfully!');
       }
     } catch (err) {
-      console.error("Failed to delete product", err);
+      console.error('Upload failed', err);
+      alert('❌ Upload failed. Please check your connection.');
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
     const form = e.target;
+    
+    // Ensure we have an image link (either manual or uploaded)
+    const finalImageUrl = tempImageUrl || form.manualImage.value || 'https://via.placeholder.com/600x600?text=Artsy+Product';
+
     const newProduct = {
       name: form.name.value,
       description: form.description.value,
       price: Number(form.price.value),
       type: form.type.value,
       category: isAddingNewCategory ? newCategoryName : form.category.value,
-      images: [form.image.value || 'https://via.placeholder.com/600x600?text=Artsy+Product']
+      images: [finalImageUrl]
     };
     
     try {
@@ -87,9 +77,10 @@ function Admin() {
       if (res.ok) {
         alert('Product published successfully!');
         form.reset();
+        setTempImageUrl('');
         setNewCategoryName('');
         setIsAddingNewCategory(false);
-        fetchProducts(); // Refresh the list
+        fetchProducts();
         fetchStats();
       }
     } catch (err) {
@@ -99,7 +90,9 @@ function Admin() {
 
   return (
     <div className="admin-page">
+      {/* ... previous content ... */}
       <div className="container admin-container">
+        {/* ... sidebar ... */}
         <aside className="admin-sidebar">
           <div className="sidebar-header">
             <h2 className="brand-accent">Artsy Panel</h2>
@@ -115,7 +108,7 @@ function Admin() {
         </aside>
 
         <main className="admin-content">
-          {/* ... dashboard and orders tabs ... */}
+          {/* ... dashboard and orders tabs (same as before) ... */}
           {activeTab === 'dashboard' && (
             <div className="dashboard-view animate-fade-in">
               <div className="admin-header">
@@ -215,7 +208,6 @@ function Admin() {
               </div>
 
               <div className="admin-grid-layout" style={{display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '30px', alignItems: 'start'}}>
-                {/* Add Product Form */}
                 <div className="admin-form-container glass-card">
                   <h3>Add New Product</h3>
                   <form onSubmit={handleAddProduct} className="admin-form">
@@ -257,10 +249,43 @@ function Admin() {
                           </select>
                         )}
                       </div>
+                      
+                      {/* NEW: IMAGE UPLOAD SECTION */}
+                      <div className="form-group" style={{gridColumn: 'span 2'}}>
+                        <label className="metric-label">Product Visuals</label>
+                        <div className="upload-preview-container">
+                          {tempImageUrl ? (
+                            <div className="upload-preview">
+                              <img src={tempImageUrl} alt="Preview" />
+                              <button type="button" className="btn-link" onClick={() => setTempImageUrl('')}>Replace Photo</button>
+                            </div>
+                          ) : (
+                            <div className="upload-box">
+                              <input 
+                                type="file" 
+                                id="product-photo" 
+                                accept="image/*" 
+                                capture="environment"
+                                onChange={handleImageUpload} 
+                                style={{display: 'none'}} 
+                              />
+                              <label htmlFor="product-photo" className="upload-label">
+                                {isUploading ? '📤 Consulting the Cloud...' : '📸 Snap or Choice Photo'}
+                              </label>
+                              <div style={{marginTop: '0.8rem', fontSize: '0.7rem', color: '#999'}}>
+                                Or paste a link: 
+                                <input name="manualImage" placeholder="https://..." className="admin-input-mini" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
                       <textarea name="description" placeholder="Product Story / Description" required className="admin-input" style={{gridColumn: 'span 2'}}></textarea>
-                      <input name="image" placeholder="Image URL" className="admin-input" style={{gridColumn: 'span 2'}} />
                     </div>
-                    <button type="submit" className="btn btn-primary auth-btn" style={{marginTop: '1rem'}}>Publish to Shop</button>
+                    <button type="submit" disabled={isUploading} className="btn btn-primary auth-btn" style={{marginTop: '1rem', opacity: isUploading ? 0.7 : 1}}>
+                      {isUploading ? 'Preparing Post...' : 'Publish to Shop'}
+                    </button>
                   </form>
                 </div>
 
@@ -313,7 +338,6 @@ function Admin() {
               </div>
             </div>
           )}
-     )}
 
           {/* --- CUSTOMERS TAB --- */}
           {activeTab === 'customers' && (

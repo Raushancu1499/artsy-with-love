@@ -59,6 +59,22 @@ router.get('/categories', async (req, res) => {
   }
 });
 
+const { upload } = require('../config/cloudinary');
+
+// ... (remaining imports)
+
+// Upload image (Admin Only)
+router.post('/upload', verifyToken, isAdmin, upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    res.json({ secure_url: req.file.path });
+  } catch (err) {
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
 // Delete product (Admin Only)
 router.delete('/products/:id', verifyToken, isAdmin, async (req, res) => {
   try {

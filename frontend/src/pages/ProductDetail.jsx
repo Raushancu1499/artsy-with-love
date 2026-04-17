@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Gift, Calendar, Heart, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import API_BASE_URL from '../config/api';
 import './ProductDetail.css';
 
 function ProductDetail() {
@@ -13,7 +14,7 @@ function ProductDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/products')
+    fetch(`${API_BASE_URL}/api/products`)
       .then(res => res.json())
       .then(data => {
         const found = data.find(p => p._id === id);
@@ -43,8 +44,15 @@ function ProductDetail() {
         {/* Gallery */}
         <div className="p-detail-gallery">
           <div className="main-img-wrapper">
-            <img src={product.images[0]} alt={product.name} />
-            {product.label && <span className={`card-badge badge-${product.label.toLowerCase().replace(' ', '')}`}>{product.label}</span>}
+            <img 
+              src={(product.images && product.images.length > 0) ? product.images[0] : 'https://via.placeholder.com/600x600?text=Handmade+Gift'} 
+              alt={product.name} 
+            />
+            {product.labels && product.labels.length > 0 && (
+              <span className={`card-badge badge-${product.labels[0].toLowerCase().replace(' ', '-')}`}>
+                {product.labels[0]}
+              </span>
+            )}
           </div>
         </div>
 

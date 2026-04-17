@@ -17,7 +17,7 @@ function ProductDetail() {
     fetch(`${API_BASE_URL}/api/products`)
       .then(res => res.json())
       .then(data => {
-        const found = data.find(p => p._id === id);
+        const found = data.find(p => p._id == id);
         setProduct(found);
         setLoading(false);
       })

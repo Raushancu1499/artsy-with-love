@@ -14,6 +14,19 @@ function Admin() {
   const [isUploading, setIsUploading] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState('');
   const [productSubTab, setProductSubTab] = useState('marketplace'); // 'marketplace' or 'add'
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  // Form State for Editing/Adding
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    price: '',
+    type: 'fixed',
+    category: 'Flowers',
+    stock: 1,
+    production: 'Ships in 3-5 days'
+  });
 
   useEffect(() => {
     if (activeTab === 'dashboard') fetchStats();
@@ -100,7 +113,29 @@ function Admin() {
     }
   };
 
+  const handleEditProduct = (product) => {
+    setIsEditing(true);
+    setEditingProduct(product);
+    setFormData({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      type: product.type || 'fixed',
+      category: product.category,
+      stock: product.stock || 1,
+      production: product.productionTimeline || 'Ships in 3-5 days'
+    });
+    setTempImageUrl(product.images?.[0] || '');
+    setProductSubTab('add'); // Switch to the form view
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleImageUpload = async (e) => {
+{
     const file = e.target.files[0];
     if (!file) return;
 
@@ -130,44 +165,59 @@ function Admin() {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
-    const form = e.target;
     
     // Ensure we have an image link (either manual or uploaded)
-    const finalImageUrl = tempImageUrl || form.manualImage.value || 'https://via.placeholder.com/600x600?text=Artsy+Product';
+    const manualImage = e.target.manualImage?.value;
+    const finalImageUrl = tempImageUrl || manualImage || 'https://via.placeholder.com/600x600?text=Artsy+Product';
 
-    const newProduct = {
-      name: form.name.value,
-      description: form.description.value,
-      price: Number(form.price.value),
-      type: form.type.value,
-      stock: Number(form.stock?.value || 0),
-      category: isAddingNewCategory ? newCategoryName : form.category.value,
+    const productPayload = {
+      ...formData,
+      category: isAddingNewCategory ? newCategoryName : formData.category,
       images: [finalImageUrl]
     };
     
     try {
       const token = localStorage.getItem('artsy_token');
-      const res = await fetch(`${API_BASE_URL}/api/products`, {
-        method: 'POST',
+      const url = isEditing 
+        ? `${API_BASE_URL}/api/products/${editingProduct?._id}`
+        : `${API_BASE_URL}/api/products`;
+      const method = isEditing ? 'PATCH' : 'POST';
+
+      const res = await fetch(url, {
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(newProduct)
+        body: JSON.stringify(productPayload)
       });
       if (res.ok) {
-        alert('Product published successfully!');
-        form.reset();
-        setTempImageUrl('');
-        setNewCategoryName('');
-        setIsAddingNewCategory(false);
+        alert(isEditing ? '✨ Treasure refined successfully!' : '✨ Product published successfully!');
+        resetForm();
         setProductSubTab('marketplace'); // Switch back to view the list
         fetchProducts();
         fetchStats();
       }
     } catch (err) {
-      console.error('Failed to add product', err);
+      console.error('Failed to process product', err);
     }
+  };
+
+  const resetForm = () => {
+    setIsEditing(false);
+    setEditingProduct(null);
+    setFormData({
+      name: '',
+      description: '',
+      price: '',
+      type: 'fixed',
+      category: 'Flowers',
+      stock: 1,
+      production: 'Ships in 3-5 days'
+    });
+    setTempImageUrl('');
+    setNewCategoryName('');
+    setIsAddingNewCategory(false);
   };
 
   return (
@@ -372,6 +422,13 @@ function Admin() {
                                   </td>
                                   <td>
                                     <button 
+                                      onClick={() => handleEditProduct(p)}
+                                      className="icon-btn edit-btn"
+                                      title="Refine Treasure"
+                                    >
+                                      <Edit3 size={16} />
+                                    </button>
+                                    <button 
                                       onClick={() => handleDeleteProduct(p._id)}
                                       className="icon-btn delete-btn"
                                       title="Retire Treasure"
@@ -393,26 +450,45 @@ function Admin() {
                   )}
                 </div>
               ) : (
-                /* FULL WIDTH ADD PRODUCT FORM */
+                /* FULL WIDTH ADD/EDIT PRODUCT FORM */
                 <div className="admin-form-full animate-fade-in">
                   <div className="admin-form-container glass-card full-form">
                     <div className="form-header">
-                      <h3>Creation Portal</h3>
-                      <p>Describe your new artisanal treasure to the world.</p>
+                      <h3>{isEditing ? 'Refinement Portal' : 'Creation Portal'}</h3>
+                      <p>{isEditing ? `You are refining "${editingProduct?.name}".` : 'Describe your new artisanal treasure to the world.'}</p>
                     </div>
                     <form onSubmit={handleAddProduct} className="admin-form">
                       <div className="form-grid-three">
                         <div className="form-group">
                           <label className="metric-label">Product Name</label>
-                          <input name="name" placeholder="e.g. Velvet Sleepy Bunny" required className="admin-input" />
+                          <input 
+                            name="name" 
+                            value={formData.name}
+                            onChange={handleFormChange}
+                            placeholder="e.g. Velvet Sleepy Bunny" 
+                            required 
+                            className="admin-input" 
+                          />
                         </div>
                         <div className="form-group">
                           <label className="metric-label">Price (₹)</label>
-                          <input name="price" type="number" placeholder="0" className="admin-input" />
+                          <input 
+                            name="price" 
+                            type="number" 
+                            value={formData.price}
+                            onChange={handleFormChange}
+                            placeholder="0" 
+                            className="admin-input" 
+                          />
                         </div>
                         <div className="form-group">
                           <label className="metric-label">Product Type</label>
-                          <select name="type" className="admin-input">
+                          <select 
+                            name="type" 
+                            value={formData.type}
+                            onChange={handleFormChange}
+                            className="admin-input"
+                          >
                             <option value="fixed">Fixed Price</option>
                             <option value="custom">Custom Quote</option>
                           </select>
@@ -420,14 +496,16 @@ function Admin() {
                         <div className="form-group">
                           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
                             <label className="metric-label">Category</label>
-                            <button 
-                              type="button" 
-                              className="btn-link" 
-                              style={{fontSize: '0.7rem'}}
-                              onClick={() => setIsAddingNewCategory(!isAddingNewCategory)}
-                            >
-                              {isAddingNewCategory ? '← Back to list' : '+ Add New'}
-                            </button>
+                            {!isEditing && (
+                              <button 
+                                type="button" 
+                                className="btn-link" 
+                                style={{fontSize: '0.7rem'}}
+                                onClick={() => setIsAddingNewCategory(!isAddingNewCategory)}
+                              >
+                                {isAddingNewCategory ? '← Back to list' : '+ Add New'}
+                              </button>
+                            )}
                           </div>
                           {isAddingNewCategory ? (
                             <input 
@@ -440,7 +518,14 @@ function Admin() {
                               required
                             />
                           ) : (
-                            <select name="category" className="admin-input" required>
+                            <select 
+                              name="category" 
+                              value={formData.category}
+                              onChange={handleFormChange}
+                              className="admin-input" 
+                              required
+                              disabled={isEditing}
+                            >
                               <option value="Flowers">Flowers</option>
                               <option value="Soft Toys">Soft Toys</option>
                               <option value="Keychains">Keychains</option>
@@ -450,11 +535,24 @@ function Admin() {
                         </div>
                         <div className="form-group">
                           <label className="metric-label">Quantity in Stock</label>
-                          <input name="stock" type="number" defaultValue="1" min="0" className="admin-input" />
+                          <input 
+                            name="stock" 
+                            type="number" 
+                            value={formData.stock}
+                            onChange={handleFormChange}
+                            min="0" 
+                            className="admin-input" 
+                          />
                         </div>
                         <div className="form-group">
                           <label className="metric-label">Production Info</label>
-                          <input name="production" placeholder="Ships in 3-5 days" className="admin-input" defaultValue="Ships in 3-5 days" />
+                          <input 
+                            name="production" 
+                            value={formData.production}
+                            onChange={handleFormChange}
+                            placeholder="Ships in 3-5 days" 
+                            className="admin-input" 
+                          />
                         </div>
                         
                         <div className="form-group" style={{gridColumn: 'span 3'}}>
@@ -463,7 +561,9 @@ function Admin() {
                             {tempImageUrl ? (
                               <div className="upload-preview full-preview">
                                 <img src={tempImageUrl} alt="Preview" />
-                                <button type="button" className="btn-link" onClick={() => setTempImageUrl('')}>Replace Photo</button>
+                                <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
+                                  <button type="button" className="btn-link" onClick={() => setTempImageUrl('')}>Replace Photo</button>
+                                </div>
                               </div>
                             ) : (
                               <div className="upload-box full-box">
@@ -488,12 +588,25 @@ function Admin() {
 
                         <div className="form-group" style={{gridColumn: 'span 3'}}>
                           <label className="metric-label">Product Story / Description</label>
-                          <textarea name="description" placeholder="The heart and soul of your product..." required className="admin-input" style={{height: '100px'}}></textarea>
+                          <textarea 
+                            name="description" 
+                            value={formData.description}
+                            onChange={handleFormChange}
+                            placeholder="The heart and soul of your product..." 
+                            required 
+                            className="admin-input" 
+                            style={{height: '100px'}}
+                          ></textarea>
                         </div>
                       </div>
-                      <div className="form-footer">
+                      <div className="form-footer" style={{gap: '2rem'}}>
+                        {isEditing && (
+                          <button type="button" className="btn btn-secondary" onClick={resetForm}>
+                            Cancel Refinement
+                          </button>
+                        )}
                         <button type="submit" disabled={isUploading} className="btn btn-primary auth-btn" style={{padding: '1rem 3rem', opacity: isUploading ? 0.7 : 1}}>
-                          {isUploading ? 'Preparing Post...' : 'Publish to Marketplace'}
+                          {isUploading ? 'Preparing Post...' : (isEditing ? 'Save Refined Treasure' : 'Publish to Marketplace')}
                         </button>
                       </div>
                     </form>

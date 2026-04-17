@@ -52,6 +52,23 @@
 .badge-new { border-left: 3px solid var(--primary); }
 .badge-bestseller { border-left: 3px solid var(--secondary); }
 .badge-must-buy { border-left: 3px solid var(--primary-dark); }
+.badge-sold-out { 
+  background: #334155; 
+  color: #fff; 
+  border: none;
+}
+
+.product-card.sold-out .product-img-container img {
+  filter: grayscale(0.8);
+  opacity: 0.6;
+}
+
+.card-btn.disabled {
+  pointer-events: none;
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+}
 
 .product-info {
   padding: 1.5rem 1rem;

@@ -67,6 +67,18 @@ function ProductDetail() {
             <span>{product.productionTimeline}</span>
           </div>
 
+          {product.stock !== undefined && product.type !== 'custom' && (
+            <div className={`stock-status ${product.stock === 0 ? 'out-of-stock' : 'in-stock'}`}>
+              {product.stock === 0 ? (
+                <span className="stock-alert">🚪 Currently Out of Stock</span>
+              ) : product.stock <= 5 ? (
+                <span className="stock-warning">⏳ Hurry! Only {product.stock} unique pieces left!</span>
+              ) : (
+                <span className="stock-ready">✨ Ready to Ship ({product.stock} available)</span>
+              )}
+            </div>
+          )}
+
           <div className="gift-mode-section">
             <label className="gift-mode-toggle">
               <input 
@@ -92,7 +104,13 @@ function ProductDetail() {
             {product.type === 'custom' ? (
               <Link to="/custom-order" className="btn btn-primary w-100">Request Customization</Link>
             ) : (
-              <button className="btn btn-primary w-100" onClick={handleAddToCart}>Add to Cart</button>
+              <button 
+                className={`btn btn-primary w-100 ${product.stock === 0 ? 'disabled-btn' : ''}`} 
+                onClick={handleAddToCart}
+                disabled={product.stock === 0}
+              >
+                {product.stock === 0 ? 'Currently Out of Stock' : 'Add to Cart'}
+              </button>
             )}
           </div>
 

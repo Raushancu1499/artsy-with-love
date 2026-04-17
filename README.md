@@ -1,7 +1,5 @@
 # Artsy With Love | Premium Boutique E-Commerce Platform
 
-**Artsy With Love** is a high-end, full-stack artisanal marketplace designed for luxury crochet gifting. The platform features an editorial-style design, a robust administrative backend, and containerized deployment infrastructure.
-
 ---
 
 ## 🌐 Live Production
@@ -10,6 +8,8 @@ Explore the live marketplace and the management engine:
 - **Backend (Render):** [https://artsy-with-love-backend.onrender.com](https://artsy-with-love-backend.onrender.com) (API Entry Point)
 
 ---
+
+**Artsy With Love** is a high-end, full-stack artisanal marketplace designed for luxury crochet gifting. The platform features an editorial-style design, a robust administrative backend, and containerized deployment infrastructure.
 
 ## 🚀 Quick Start Guide
 

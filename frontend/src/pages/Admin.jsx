@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import API_BASE_URL from '../config/api';
 import './Admin.css';
-import { LayoutDashboard, ShoppingBag, Palette, Users, Settings, TrendingUp, DollarSign, Package, UserCheck } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Palette, Users, Settings, TrendingUp, DollarSign, Package, UserCheck, Plus, Minus } from 'lucide-react';
 
 function Admin() {
   const [products, setProducts] = useState([]);
@@ -13,6 +13,7 @@ function Admin() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState('');
+  const [productSubTab, setProductSubTab] = useState('marketplace'); // 'marketplace' or 'add'
 
   useEffect(() => {
     if (activeTab === 'dashboard') fetchStats();
@@ -78,6 +79,27 @@ function Admin() {
     }
   };
 
+  const handleUpdateStock = async (id, currentStock, delta) => {
+    const newStock = Math.max(0, currentStock + delta);
+    try {
+      const token = localStorage.getItem('artsy_token');
+      const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ stock: newStock })
+      });
+      if (res.ok) {
+        // Optimistically update the UI for instant gratification
+        setProducts(products.map(p => p._id === id ? { ...p, stock: newStock } : p));
+      }
+    } catch (err) {
+      console.error('Failed to update stock', err);
+    }
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -118,6 +140,7 @@ function Admin() {
       description: form.description.value,
       price: Number(form.price.value),
       type: form.type.value,
+      stock: Number(form.stock?.value || 0),
       category: isAddingNewCategory ? newCategoryName : form.category.value,
       images: [finalImageUrl]
     };
@@ -138,6 +161,7 @@ function Admin() {
         setTempImageUrl('');
         setNewCategoryName('');
         setIsAddingNewCategory(false);
+        setProductSubTab('marketplace'); // Switch back to view the list
         fetchProducts();
         fetchStats();
       }
@@ -159,7 +183,7 @@ function Admin() {
           <ul className="admin-nav">
             <li><button className={`admin-nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}><LayoutDashboard size={18} /> Dashboard</button></li>
             <li><button className={`admin-nav-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}><ShoppingBag size={18} /> Orders</button></li>
-            <li><button className={`admin-nav-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}><Palette size={18} /> Products</button></li>
+            <li><button className={`admin-nav-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}><Palette size={18} /> Marketplace</button></li>
             <li><button className={`admin-nav-btn ${activeTab === 'customers' ? 'active' : ''}`} onClick={() => setActiveTab('customers')}><Users size={18} /> Customers</button></li>
             <li><button className={`admin-nav-btn ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}><Settings size={18} /> Settings</button></li>
           </ul>
@@ -257,125 +281,82 @@ function Admin() {
             </div>
           )}
           
-          {/* --- PRODUCTS TAB --- */}
+          {/* --- MARKETPLACE (PRODUCTS) TAB --- */}
           {activeTab === 'products' && (
             <div className="animate-fade-in">
               <div className="admin-header">
-                <h1 className="editorial-title">Inventory Control</h1>
-                <p>Manage your artisanal collections and availability.</p>
+                <h1 className="editorial-title">Artsy Marketplace</h1>
+                <div className="marketplace-subnav">
+                  <button 
+                    className={`subnav-btn ${productSubTab === 'marketplace' ? 'active' : ''}`}
+                    onClick={() => setProductSubTab('marketplace')}
+                  >
+                    📦 Storefront Inventory
+                  </button>
+                  <button 
+                    className={`subnav-btn ${productSubTab === 'add' ? 'active' : ''}`}
+                    onClick={() => setProductSubTab('add')}
+                  >
+                    ✨ Launch New Treasure
+                  </button>
+                </div>
               </div>
 
-              <div className="admin-grid-layout" style={{display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '30px', alignItems: 'start'}}>
-                <div className="admin-form-container glass-card">
-                  <h3>Add New Product</h3>
-                  <form onSubmit={handleAddProduct} className="admin-form">
-                    <div className="form-grid">
-                      <input name="name" placeholder="Product Name" required className="admin-input" />
-                      <input name="price" type="number" placeholder="Price (₹)" className="admin-input" />
-                      <select name="type" className="admin-input">
-                        <option value="fixed">Fixed Price</option>
-                        <option value="custom">Custom Quote</option>
-                      </select>
-                      <div className="form-group">
-                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
-                          <label className="metric-label">Category</label>
-                          <button 
-                            type="button" 
-                            className="btn-link" 
-                            style={{fontSize: '0.7rem'}}
-                            onClick={() => setIsAddingNewCategory(!isAddingNewCategory)}
-                          >
-                            {isAddingNewCategory ? '← Back to list' : '+ Add New'}
-                          </button>
-                        </div>
-                        {isAddingNewCategory ? (
-                          <input 
-                            type="text" 
-                            name="customCategory"
-                            className="admin-input" 
-                            placeholder="e.g. Wall Hangings"
-                            value={newCategoryName}
-                            onChange={(e) => setNewCategoryName(e.target.value)}
-                            required
-                          />
-                        ) : (
-                          <select name="category" className="admin-input" required>
-                            <option value="Flowers">Flowers</option>
-                            <option value="Soft Toys">Soft Toys</option>
-                            <option value="Keychains">Keychains</option>
-                            <option value="Combos">Combos</option>
-                          </select>
-                        )}
-                      </div>
-                      
-                      {/* NEW: IMAGE UPLOAD SECTION */}
-                      <div className="form-group" style={{gridColumn: 'span 2'}}>
-                        <label className="metric-label">Product Visuals</label>
-                        <div className="upload-preview-container">
-                          {tempImageUrl ? (
-                            <div className="upload-preview">
-                              <img src={tempImageUrl} alt="Preview" />
-                              <button type="button" className="btn-link" onClick={() => setTempImageUrl('')}>Replace Photo</button>
-                            </div>
-                          ) : (
-                            <div className="upload-box">
-                              <input 
-                                type="file" 
-                                id="product-photo" 
-                                accept="image/*" 
-                                onChange={handleImageUpload} 
-                                style={{display: 'none'}} 
-                              />
-                              <label htmlFor="product-photo" className="upload-label">
-                                {isUploading ? '📤 Consulting the Cloud...' : '📸 Choose from Gallery or Files'}
-                              </label>
-                              <div style={{marginTop: '0.8rem', fontSize: '0.7rem', color: '#999'}}>
-                                Or paste a link: 
-                                <input name="manualImage" placeholder="https://..." className="admin-input-mini" />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <textarea name="description" placeholder="Product Story / Description" required className="admin-input" style={{gridColumn: 'span 2'}}></textarea>
-                    </div>
-                    <button type="submit" disabled={isUploading} className="btn btn-primary auth-btn" style={{marginTop: '1rem', opacity: isUploading ? 0.7 : 1}}>
-                      {isUploading ? 'Preparing Post...' : 'Publish to Shop'}
-                    </button>
-                  </form>
-                </div>
-
-                {/* Existing Products List */}
-                <div className="admin-inventory-list">
+              {productSubTab === 'marketplace' ? (
+                /* FULL WIDTH MARKETPLACE LIST */
+                <div className="admin-inventory-full animate-fade-in">
                   <div className="table-container premium-card">
                     <table className="premium-table">
                       <thead>
                         <tr>
-                          <th>Item</th>
+                          <th>Item Details</th>
                           <th>Category</th>
                           <th>Price</th>
-                          <th>Action</th>
+                          <th>Stock Status</th>
+                          <th>Controls</th>
                         </tr>
                       </thead>
                       <tbody>
                         {products.length > 0 ? products.map(p => (
                           <tr key={p._id}>
                             <td className="product-table-cell">
-                              <img src={p.images?.[0]} alt={p.name} className="table-thumb" />
-                              <div className="table-info">
-                                <span className="p-name">{p.name}</span>
-                                <span className="p-id">{p._id.slice(-6).toUpperCase()}</span>
+                              <div className="item-preview">
+                                <img src={p.images?.[0]} alt={p.name} className="table-thumb" />
+                                <div className="table-info">
+                                  <span className="p-name">{p.name}</span>
+                                  <span className="p-id">{p._id.slice(-6).toUpperCase()}</span>
+                                </div>
                               </div>
                             </td>
-                            <td>{p.category}</td>
-                            <td>₹{p.price}</td>
+                            <td><span className="pill pill-role">{p.category}</span></td>
+                            <td><span className="price-tag">₹{p.price}</span></td>
+                            <td>
+                              <div className="qty-control">
+                                <button 
+                                  className="qty-btn" 
+                                  onClick={() => handleUpdateStock(p._id, p.stock, -1)}
+                                  disabled={p.stock === 0}
+                                  title="Decrease Stock"
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <span className={`pill stock-pill ${p.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                                  {p.stock > 0 ? `${p.stock} Available` : 'Sold Out'}
+                                </span>
+                                <button 
+                                  className="qty-btn" 
+                                  onClick={() => handleUpdateStock(p._id, p.stock, 1)}
+                                  title="Increase Stock"
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            </td>
                             <td>
                               <button 
                                 onClick={() => handleDeleteProduct(p._id)}
                                 className="icon-btn delete-btn"
-                                title="Delete Product"
-                                style={{color: '#ff4d4d'}}
+                                title="Retire Treasure"
                               >
                                 🗑️
                               </button>
@@ -383,8 +364,8 @@ function Admin() {
                           </tr>
                         )) : (
                           <tr>
-                            <td colSpan="4" style={{textAlign: 'center', padding: '3rem'}}>
-                              {loading ? 'Consulting the archive...' : 'No treasures in stock.'}
+                            <td colSpan="5" style={{textAlign: 'center', padding: '5rem'}}>
+                              {loading ? 'Consulting the archive...' : 'The marketplace is currently empty.'}
                             </td>
                           </tr>
                         )}
@@ -392,7 +373,114 @@ function Admin() {
                     </table>
                   </div>
                 </div>
-              </div>
+              ) : (
+                /* FULL WIDTH ADD PRODUCT FORM */
+                <div className="admin-form-full animate-fade-in">
+                  <div className="admin-form-container glass-card full-form">
+                    <div className="form-header">
+                      <h3>Creation Portal</h3>
+                      <p>Describe your new artisanal treasure to the world.</p>
+                    </div>
+                    <form onSubmit={handleAddProduct} className="admin-form">
+                      <div className="form-grid-three">
+                        <div className="form-group">
+                          <label className="metric-label">Product Name</label>
+                          <input name="name" placeholder="e.g. Velvet Sleepy Bunny" required className="admin-input" />
+                        </div>
+                        <div className="form-group">
+                          <label className="metric-label">Price (₹)</label>
+                          <input name="price" type="number" placeholder="0" className="admin-input" />
+                        </div>
+                        <div className="form-group">
+                          <label className="metric-label">Product Type</label>
+                          <select name="type" className="admin-input">
+                            <option value="fixed">Fixed Price</option>
+                            <option value="custom">Custom Quote</option>
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
+                            <label className="metric-label">Category</label>
+                            <button 
+                              type="button" 
+                              className="btn-link" 
+                              style={{fontSize: '0.7rem'}}
+                              onClick={() => setIsAddingNewCategory(!isAddingNewCategory)}
+                            >
+                              {isAddingNewCategory ? '← Back to list' : '+ Add New'}
+                            </button>
+                          </div>
+                          {isAddingNewCategory ? (
+                            <input 
+                              type="text" 
+                              name="customCategory"
+                              className="admin-input" 
+                              placeholder="e.g. Wall Hangings"
+                              value={newCategoryName}
+                              onChange={(e) => setNewCategoryName(e.target.value)}
+                              required
+                            />
+                          ) : (
+                            <select name="category" className="admin-input" required>
+                              <option value="Flowers">Flowers</option>
+                              <option value="Soft Toys">Soft Toys</option>
+                              <option value="Keychains">Keychains</option>
+                              <option value="Combos">Combos</option>
+                            </select>
+                          )}
+                        </div>
+                        <div className="form-group">
+                          <label className="metric-label">Quantity in Stock</label>
+                          <input name="stock" type="number" defaultValue="1" min="0" className="admin-input" />
+                        </div>
+                        <div className="form-group">
+                          <label className="metric-label">Production Info</label>
+                          <input name="production" placeholder="Ships in 3-5 days" className="admin-input" defaultValue="Ships in 3-5 days" />
+                        </div>
+                        
+                        <div className="form-group" style={{gridColumn: 'span 3'}}>
+                          <label className="metric-label">Artisan Visuals</label>
+                          <div className="upload-preview-container">
+                            {tempImageUrl ? (
+                              <div className="upload-preview full-preview">
+                                <img src={tempImageUrl} alt="Preview" />
+                                <button type="button" className="btn-link" onClick={() => setTempImageUrl('')}>Replace Photo</button>
+                              </div>
+                            ) : (
+                              <div className="upload-box full-box">
+                                <input 
+                                  type="file" 
+                                  id="product-photo" 
+                                  accept="image/*" 
+                                  onChange={handleImageUpload} 
+                                  style={{display: 'none'}} 
+                                />
+                                <label htmlFor="product-photo" className="upload-label">
+                                  {isUploading ? '📤 Consulting the Cloud...' : '📸 Choose from Gallery or Files'}
+                                </label>
+                                <div style={{marginTop: '0.8rem', fontSize: '0.7rem', color: '#999'}}>
+                                  Or paste a public link: 
+                                  <input name="manualImage" placeholder="https://..." className="admin-input-mini" />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="form-group" style={{gridColumn: 'span 3'}}>
+                          <label className="metric-label">Product Story / Description</label>
+                          <textarea name="description" placeholder="The heart and soul of your product..." required className="admin-input" style={{height: '100px'}}></textarea>
+                        </div>
+                      </div>
+                      <div className="form-footer">
+                        <button type="submit" disabled={isUploading} className="btn btn-primary auth-btn" style={{padding: '1rem 3rem', opacity: isUploading ? 0.7 : 1}}>
+                          {isUploading ? 'Preparing Post...' : 'Publish to Marketplace'}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

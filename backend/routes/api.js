@@ -99,6 +99,19 @@ router.post('/products', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
+// Update product (Admin Only)
+router.patch('/products/:id', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json(product);
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to update product' });
+  }
+});
+
 // --- Orders API ---
 // Get all orders (Admin Only)
 router.get('/orders', verifyToken, isAdmin, async (req, res) => {

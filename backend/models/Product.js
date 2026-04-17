@@ -10,6 +10,7 @@ const productSchema = new mongoose.Schema({
   occasions: [{ type: String }],
   labels: [{ type: String }], // Best Seller, New
   productionTimeline: { type: String, default: 'Made to order - ships in 3-5 days' },
+  stock: { type: Number, default: 0 },
   isFeatured: { type: Boolean, default: false }
 }, {
   timestamps: true

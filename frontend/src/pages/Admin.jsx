@@ -425,7 +425,7 @@ function Admin() {
                                     className="icon-btn edit-btn"
                                     title="Refine Treasure"
                                   >
-                                    <Pencil size={16} />
+                                    ✏️
                                   </button>
                                     <button 
                                       onClick={() => handleDeleteProduct(p._id)}

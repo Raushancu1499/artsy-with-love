@@ -83,21 +83,27 @@
 
 /* --- Content Area --- */
 .admin-content {
-  padding: 3rem 4rem;
-  max-width: 1200px;
+  padding: 4rem 6rem;
+  max-width: 1400px;
+  width: 100%;
+}
+
+.admin-header {
+  margin-bottom: 4rem;
 }
 
 .editorial-title {
   font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 2.8rem;
+  margin-bottom: 0.75rem;
   color: #111;
+  letter-spacing: -1px;
 }
 
 .admin-header p {
-  color: #666;
+  color: #888;
   font-size: 1.1rem;
-  margin-bottom: 3rem;
+  font-weight: 500;
 }
 
 /* --- Premium Metrics --- */

@@ -145,9 +145,9 @@ function Admin() {
 
           {/* --- ORDERS TAB --- */}
           {activeTab === 'orders' && (
-            <div>
+            <div className="orders-view animate-fade-in">
               <div className="admin-header">
-                <h1>Order Management</h1>
+                <h1 className="editorial-title">Order Management</h1>
                 <div className="admin-actions">
                   <select className="admin-select">
                     <option>All Statuses</option>
@@ -157,8 +157,8 @@ function Admin() {
                 </div>
               </div>
 
-              <div className="table-responsive">
-                <table className="admin-table">
+              <div className="table-container premium-card">
+                <table className="premium-table">
                   <thead>
                     <tr>
                       <th>Order ID</th>
@@ -173,8 +173,8 @@ function Admin() {
                     <tr>
                       <td>#ORD-1001</td>
                       <td>Jane Doe</td>
-                      <td><span className="badge badge-bestseller">Fixed</span></td>
-                      <td><span className="status-badge status-pending">Pending</span></td>
+                      <td><span className="pill pill-role">Fixed</span></td>
+                      <td><span className="pill pill-status pending">Pending</span></td>
                       <td>₹999</td>
                       <td><button className="btn-link">Process</button></td>
                     </tr>

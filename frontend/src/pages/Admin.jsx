@@ -419,20 +419,20 @@ function Admin() {
                                       </button>
                                     </div>
                                   </td>
-                                  <td>
-                                  <button 
-                                    onClick={() => handleEditProduct(p)}
-                                    className="icon-btn edit-btn"
-                                    title="Refine Treasure"
-                                  >
-                                    ✏️
-                                  </button>
+                                  <td style={{ minWidth: '150px' }}>
+                                    <button 
+                                      onClick={() => handleEditProduct(p)}
+                                      className="icon-btn edit-btn"
+                                      style={{ background: '#fbbf24', color: '#000', padding: '6px 12px', fontSize: '0.8rem', marginRight: '8px' }}
+                                    >
+                                      ✏️ Edit
+                                    </button>
                                     <button 
                                       onClick={() => handleDeleteProduct(p._id)}
                                       className="icon-btn delete-btn"
-                                      title="Retire Treasure"
+                                      style={{ background: '#fee2e2', color: '#111', padding: '6px 12px', fontSize: '0.8rem' }}
                                     >
-                                      🗑️
+                                      🗑️ Delete
                                     </button>
                                   </td>
                                 </tr>

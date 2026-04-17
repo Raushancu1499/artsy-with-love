@@ -81,6 +81,39 @@ router.post('/orders', async (req, res) => {
 });
 
 // --- Integrations API ---
+const User = require('../models/User');
+
+// Admin Stats
+router.get('/admin/stats', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const productCount = await Product.countDocuments();
+    const orderCount = await Order.countDocuments();
+    const userCount = await User.countDocuments();
+    
+    // Mocking revenue for demo purposes based on orders
+    const orders = await Order.find({});
+    const totalRevenue = orders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
+
+    res.json({
+      products: productCount,
+      orders: orderCount,
+      users: userCount,
+      revenue: totalRevenue
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch admin stats' });
+  }
+});
+
+// Get all customers (Admin Only)
+router.get('/admin/users', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const users = await User.find({ role: 'customer' }).select('-password');
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
 
 // Upload Image (Cloudinary)
 router.post('/upload', upload.single('image'), (req, res) => {

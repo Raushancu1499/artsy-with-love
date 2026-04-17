@@ -7,6 +7,8 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('cloudinary').v2;
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const authController = require('../controllers/authController');
+const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 
 // --- Cloudinary Config ---
 cloudinary.config({
@@ -30,6 +32,10 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET || 'mock_key_secret'
 });
 
+// --- Auth API ---
+router.post('/auth/register', authController.register);
+router.post('/auth/login', authController.login);
+
 // --- Products API ---
 // Get all products
 router.get('/products', async (req, res) => {
@@ -41,8 +47,8 @@ router.get('/products', async (req, res) => {
   }
 });
 
-// Create product (Admin)
-router.post('/products', async (req, res) => {
+// Create product (Admin Only)
+router.post('/products', verifyToken, isAdmin, async (req, res) => {
   try {
     const product = new Product(req.body);
     await product.save();
@@ -53,8 +59,8 @@ router.post('/products', async (req, res) => {
 });
 
 // --- Orders API ---
-// Get all orders (Admin)
-router.get('/orders', async (req, res) => {
+// Get all orders (Admin Only)
+router.get('/orders', verifyToken, isAdmin, async (req, res) => {
   try {
     const orders = await Order.find({}).populate('userId items.productId');
     res.json(orders);

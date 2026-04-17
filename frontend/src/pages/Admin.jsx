@@ -19,9 +19,13 @@ function Admin() {
     };
 
     try {
+      const token = localStorage.getItem('artsy_token');
       const res = await fetch(`${API_BASE_URL}/api/products`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(newProduct)
       });
       if(res.ok) alert("Product added dynamically to MongoDB!");

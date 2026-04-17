@@ -49,7 +49,32 @@
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
+}
+
+.user-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-left: 1px solid #eee;
+  padding-left: 0.75rem;
+  margin-left: 0.25rem;
+}
+
+.user-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dark);
+}
+
+.logout-btn {
+  color: #999;
+}
+
+.logout-btn:hover {
+  color: #ff4d4d;
 }
 
 .icon-btn {

@@ -8,11 +8,15 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import CustomOrder from './pages/CustomOrder';
 import Admin from './pages/Admin';
+import Login from './pages/Login';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <CartProvider>
+    <AuthProvider>
+      <CartProvider>
       <Router>
       <div className="app-container">
         <Navbar />
@@ -23,7 +27,12 @@ function App() {
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/custom-order" element={<CustomOrder />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={
+              <ProtectedRoute adminOnly>
+                <Admin />
+              </ProtectedRoute>
+            } />
             {/* Future routes: /checkout */}
           </Routes>
         </main>
@@ -32,6 +41,7 @@ function App() {
       </div>
     </Router>
     </CartProvider>
+    </AuthProvider>
   );
 }
 

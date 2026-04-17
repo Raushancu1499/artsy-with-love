@@ -250,8 +250,8 @@ function Admin() {
           {activeTab === 'customers' && (
             <div className="customers-view animate-fade-in">
               <div className="admin-header">
-                <h1 className="editorial-title">Clientele</h1>
-                <p>Management of your registered customer base.</p>
+                <h1 className="editorial-title">Customers</h1>
+                <p>Manage and view your registered community.</p>
               </div>
               
               <div className="table-container premium-card">

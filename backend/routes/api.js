@@ -59,6 +59,19 @@ router.get('/categories', async (req, res) => {
   }
 });
 
+// Delete product (Admin Only)
+router.delete('/products/:id', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete product' });
+  }
+});
+
 // Create product (Admin Only)
 router.post('/products', verifyToken, isAdmin, async (req, res) => {
   try {

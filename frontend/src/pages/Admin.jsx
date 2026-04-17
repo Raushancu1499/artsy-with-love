@@ -4,6 +4,7 @@ import './Admin.css';
 import { LayoutDashboard, ShoppingBag, Palette, Users, Settings, TrendingUp, DollarSign, Package, UserCheck } from 'lucide-react';
 
 function Admin() {
+  const [products, setProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState({ products: 0, orders: 0, users: 0, revenue: 0 });
   const [customers, setCustomers] = useState([]);
@@ -14,6 +15,7 @@ function Admin() {
   useEffect(() => {
     if (activeTab === 'dashboard') fetchStats();
     if (activeTab === 'customers') fetchCustomers();
+    if (activeTab === 'products') fetchProducts();
   }, [activeTab]);
 
   const fetchStats = async () => {
@@ -29,26 +31,40 @@ function Admin() {
     }
   };
 
-  const fetchCustomers = async () => {
+  const fetchProducts = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('artsy_token');
-      const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetch(`${API_BASE_URL}/api/products`);
       const data = await res.json();
-      setCustomers(data);
+      setProducts(data);
     } catch (err) {
-      console.error("Failed to fetch customers", err);
+      console.error("Failed to fetch products", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (!window.confirm("Are you sure you want to retire this treasure? This action is permanent.")) return;
+    
+    try {
+      const token = localStorage.getItem('artsy_token');
+      const res = await fetch(`${API_BASE_URL}/api/products/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setProducts(products.filter(p => p._id !== id));
+        fetchStats(); // Update the count metric
+      }
+    } catch (err) {
+      console.error("Failed to delete product", err);
     }
   };
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
     const form = e.target;
-    // ... same logic for product creation
     const newProduct = {
       name: form.name.value,
       description: form.description.value,
@@ -73,6 +89,7 @@ function Admin() {
         form.reset();
         setNewCategoryName('');
         setIsAddingNewCategory(false);
+        fetchProducts(); // Refresh the list
         fetchStats();
       }
     } catch (err) {
@@ -98,7 +115,7 @@ function Admin() {
         </aside>
 
         <main className="admin-content">
-          {/* --- DASHBOARD TAB --- */}
+          {/* ... dashboard and orders tabs ... */}
           {activeTab === 'dashboard' && (
             <div className="dashboard-view animate-fade-in">
               <div className="admin-header">
@@ -149,7 +166,6 @@ function Admin() {
             </div>
           )}
 
-          {/* --- ORDERS TAB --- */}
           {activeTab === 'orders' && (
             <div className="orders-view animate-fade-in">
               <div className="admin-header">
@@ -192,59 +208,112 @@ function Admin() {
           
           {/* --- PRODUCTS TAB --- */}
           {activeTab === 'products' && (
-            <div>
+            <div className="animate-fade-in">
               <div className="admin-header">
-                <h1>Inventory</h1>
+                <h1 className="editorial-title">Inventory Control</h1>
+                <p>Manage your artisanal collections and availability.</p>
               </div>
-              <div className="admin-form-container glass-card">
-                <h3>Add New Product</h3>
-                <form onSubmit={handleAddProduct} className="admin-form">
-                  <div className="form-grid">
-                    <input name="name" placeholder="Product Name" required className="admin-input" />
-                    <input name="price" type="number" placeholder="Price (₹)" className="admin-input" />
-                    <select name="type" className="admin-input">
-                      <option value="fixed">Fixed Price</option>
-                      <option value="custom">Custom Quote</option>
-                    </select>
-                    <div className="form-group">
-                      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
-                        <label className="metric-label">Category</label>
-                        <button 
-                          type="button" 
-                          className="btn-link" 
-                          style={{fontSize: '0.7rem'}}
-                          onClick={() => setIsAddingNewCategory(!isAddingNewCategory)}
-                        >
-                          {isAddingNewCategory ? '← Back to list' : '+ Add New'}
-                        </button>
+
+              <div className="admin-grid-layout" style={{display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '30px', alignItems: 'start'}}>
+                {/* Add Product Form */}
+                <div className="admin-form-container glass-card">
+                  <h3>Add New Product</h3>
+                  <form onSubmit={handleAddProduct} className="admin-form">
+                    <div className="form-grid">
+                      <input name="name" placeholder="Product Name" required className="admin-input" />
+                      <input name="price" type="number" placeholder="Price (₹)" className="admin-input" />
+                      <select name="type" className="admin-input">
+                        <option value="fixed">Fixed Price</option>
+                        <option value="custom">Custom Quote</option>
+                      </select>
+                      <div className="form-group">
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem'}}>
+                          <label className="metric-label">Category</label>
+                          <button 
+                            type="button" 
+                            className="btn-link" 
+                            style={{fontSize: '0.7rem'}}
+                            onClick={() => setIsAddingNewCategory(!isAddingNewCategory)}
+                          >
+                            {isAddingNewCategory ? '← Back to list' : '+ Add New'}
+                          </button>
+                        </div>
+                        {isAddingNewCategory ? (
+                          <input 
+                            type="text" 
+                            name="customCategory"
+                            className="admin-input" 
+                            placeholder="e.g. Wall Hangings"
+                            value={newCategoryName}
+                            onChange={(e) => setNewCategoryName(e.target.value)}
+                            required
+                          />
+                        ) : (
+                          <select name="category" className="admin-input" required>
+                            <option value="Flowers">Flowers</option>
+                            <option value="Soft Toys">Soft Toys</option>
+                            <option value="Keychains">Keychains</option>
+                            <option value="Combos">Combos</option>
+                          </select>
+                        )}
                       </div>
-                      {isAddingNewCategory ? (
-                        <input 
-                          type="text" 
-                          name="customCategory"
-                          className="admin-input" 
-                          placeholder="e.g. Wall Hangings"
-                          value={newCategoryName}
-                          onChange={(e) => setNewCategoryName(e.target.value)}
-                          required
-                        />
-                      ) : (
-                        <select name="category" className="admin-input" required>
-                          <option value="Flowers">Flowers</option>
-                          <option value="Soft Toys">Soft Toys</option>
-                          <option value="Keychains">Keychains</option>
-                          <option value="Combos">Combos</option>
-                        </select>
-                      )}
+                      <textarea name="description" placeholder="Product Story / Description" required className="admin-input" style={{gridColumn: 'span 2'}}></textarea>
+                      <input name="image" placeholder="Image URL" className="admin-input" style={{gridColumn: 'span 2'}} />
                     </div>
-                    <textarea name="description" placeholder="Product Story / Description" required className="admin-input" style={{gridColumn: 'span 2'}}></textarea>
-                    <input name="image" placeholder="Image URL" className="admin-input" style={{gridColumn: 'span 2'}} />
+                    <button type="submit" className="btn btn-primary auth-btn" style={{marginTop: '1rem'}}>Publish to Shop</button>
+                  </form>
+                </div>
+
+                {/* Existing Products List */}
+                <div className="admin-inventory-list">
+                  <div className="table-container premium-card">
+                    <table className="premium-table">
+                      <thead>
+                        <tr>
+                          <th>Item</th>
+                          <th>Category</th>
+                          <th>Price</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products.length > 0 ? products.map(p => (
+                          <tr key={p._id}>
+                            <td className="product-table-cell">
+                              <img src={p.images?.[0]} alt={p.name} className="table-thumb" />
+                              <div className="table-info">
+                                <span className="p-name">{p.name}</span>
+                                <span className="p-id">{p._id.slice(-6).toUpperCase()}</span>
+                              </div>
+                            </td>
+                            <td>{p.category}</td>
+                            <td>₹{p.price}</td>
+                            <td>
+                              <button 
+                                onClick={() => handleDeleteProduct(p._id)}
+                                className="icon-btn delete-btn"
+                                title="Delete Product"
+                                style={{color: '#ff4d4d'}}
+                              >
+                                🗑️
+                              </button>
+                            </td>
+                          </tr>
+                        )) : (
+                          <tr>
+                            <td colSpan="4" style={{textAlign: 'center', padding: '3rem'}}>
+                              {loading ? 'Consulting the archive...' : 'No treasures in stock.'}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
-                  <button type="submit" className="btn btn-primary auth-btn" style={{marginTop: '1rem'}}>Publish to Shop</button>
-                </form>
+                </div>
               </div>
             </div>
           )}
+     )}
 
           {/* --- CUSTOMERS TAB --- */}
           {activeTab === 'customers' && (

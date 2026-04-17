@@ -42,7 +42,12 @@ function Login() {
 
       if (!isRegister) {
         login(data.user, data.token);
-        navigate(from, { replace: true });
+        // If the user is an admin, take them directly to their command center
+        if (data.user.role === 'admin') {
+          navigate('/admin', { replace: true });
+        } else {
+          navigate(from, { replace: true });
+        }
       } else {
         setIsRegister(false);
         setError('Success! Your account is ready. Please login.');

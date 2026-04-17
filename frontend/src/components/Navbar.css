@@ -122,3 +122,40 @@
     display: flex;
   }
 }
+
+/* --- Admin Banner --- */
+.admin-management-banner {
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 0.5rem 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.banner-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.banner-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fbbf24; /* Gold accent for owner status */
+}
+
+.banner-links a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.3s ease;
+}
+
+.banner-links a:hover {
+  color: #fbbf24;
+  border-bottom-color: #fbbf24;
+}

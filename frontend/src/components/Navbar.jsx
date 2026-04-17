@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, Heart, User, LogOut } from 'lucide-react';
+import { ShoppingBag, Search, Menu, Heart, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
@@ -10,6 +10,16 @@ function Navbar() {
   
   return (
     <nav className="navbar glass-nav">
+      {isAdmin && (
+        <div className="admin-management-banner">
+          <div className="container banner-flex">
+            <span className="banner-status"><LayoutDashboard size={14} /> Management Mode Active</span>
+            <div className="banner-links">
+              <Link to="/admin">Go to Dashboard</Link>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="container navbar-container">
         <button className="mobile-menu-btn" aria-label="Menu">
           <Menu size={24} />

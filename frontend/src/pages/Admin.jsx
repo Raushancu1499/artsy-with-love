@@ -8,6 +8,8 @@ function Admin() {
   const [stats, setStats] = useState({ products: 0, orders: 0, users: 0, revenue: 0 });
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   useEffect(() => {
     if (activeTab === 'dashboard') fetchStats();

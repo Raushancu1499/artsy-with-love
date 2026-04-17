@@ -59,10 +59,6 @@ router.get('/categories', async (req, res) => {
   }
 });
 
-const { upload } = require('../config/cloudinary');
-
-// ... (remaining imports)
-
 // Upload image (Admin Only)
 router.post('/upload', verifyToken, isAdmin, upload.single('image'), (req, res) => {
   try {
@@ -166,19 +162,6 @@ router.get('/admin/users', verifyToken, isAdmin, async (req, res) => {
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch users' });
-  }
-});
-
-// Upload Image (Cloudinary)
-router.post('/upload', upload.single('image'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No image uploaded' });
-    }
-    // Return the secure URL from Cloudinary
-    res.json({ imageUrl: req.file.path });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to upload image' });
   }
 });
 

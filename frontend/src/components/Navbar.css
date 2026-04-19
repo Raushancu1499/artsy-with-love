@@ -330,3 +330,38 @@
 [data-theme='dark'] .dropdown-logout-btn:hover {
   background: rgba(255, 77, 77, 0.1);
 }
+
+/* --- Admin Management Banner --- */
+.admin-management-banner {
+  background: #111;
+  color: #fbbf24;
+  padding: 0.5rem 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+  position: relative;
+  z-index: 1001;
+}
+
+.banner-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.banner-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.9;
+}
+
+.banner-links a {
+  color: #fbbf24;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.banner-links a:hover {
+  color: #fff;
+}

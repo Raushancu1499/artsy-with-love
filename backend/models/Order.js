@@ -7,7 +7,8 @@ const orderSchema = new mongoose.Schema({
     email: { type: String, required: true },
     phone: { type: String, required: true },
     secondaryPhone: { type: String },
-    address: { type: String, required: true }
+    address: { type: String, required: true },
+    upiId: { type: String }
   },
   items: [
     {

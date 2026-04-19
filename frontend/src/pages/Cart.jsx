@@ -20,6 +20,7 @@ function Cart() {
     primaryPhone: '',
     secondaryPhone: '',
     fullAddress: '',
+    upiId: '',
   });
 
   const subtotal = getSubtotal();
@@ -53,6 +54,7 @@ function Cart() {
       `Primary phone: ${checkoutForm.primaryPhone}`,
       `Secondary phone: ${checkoutForm.secondaryPhone}`,
       `Address: ${checkoutForm.fullAddress}`,
+      `UPI ID: ${checkoutForm.upiId || 'Not provided'}`,
       '',
       'Please confirm the next steps for delivery and UPI payment.',
     ];
@@ -83,6 +85,7 @@ function Cart() {
         phone: checkoutForm.primaryPhone,
         secondaryPhone: checkoutForm.secondaryPhone,
         address: checkoutForm.fullAddress,
+        upiId: checkoutForm.upiId,
       },
       items: cartItems.map((item) => ({
         productId: item._id,
@@ -327,6 +330,16 @@ function Cart() {
                       value={checkoutForm.fullAddress}
                       onChange={(e) => setField('fullAddress', e.target.value)}
                       placeholder="House number, street, area, city, state, pincode"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="upiId">UPI ID (Optional)</label>
+                    <input
+                      id="upiId"
+                      type="text"
+                      value={checkoutForm.upiId}
+                      onChange={(e) => setField('upiId', e.target.value)}
+                      placeholder="e.g. username@bankname"
                     />
                   </div>
                 </div>

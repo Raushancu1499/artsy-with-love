@@ -608,6 +608,9 @@ function Admin() {
                             <div className="order-meta">
                               <span>{order.paymentStatus || 'pending'} payment</span>
                               <span>{order.customerDetails?.address || 'Address pending'}</span>
+                              {order.customerDetails?.upiId && (
+                                <span style={{ color: 'var(--primary-dark)', fontWeight: 'bold' }}>UPI: {order.customerDetails.upiId}</span>
+                              )}
                             </div>
                           </td>
                         </tr>

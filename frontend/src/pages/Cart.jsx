@@ -6,8 +6,6 @@ import { useAuth } from '../context/AuthContext';
 import API_BASE_URL, { DESTINATION_UPI_ID } from '../config/api';
 import './Cart.css';
 
-const QR_API = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=';
-
 const CURRENCY = '\u20B9';
 const WHATSAPP_NUMBER = (import.meta.env.VITE_WHATSAPP_NUMBER || '919876543210').replace(/\D/g, '');
 
@@ -24,7 +22,6 @@ function Cart() {
     fullAddress: '',
     upiId: '',
   });
-  const [showQR, setShowQR] = useState(false);
 
   const subtotal = getSubtotal();
   const shipping = subtotal > 0 ? 50 : 0;
@@ -119,57 +116,7 @@ function Cart() {
     }
   };
 
-  const submitManualOrder = async () => {
-    if (!cartItems.length) return;
-    if (!checkoutForm.fullName || !checkoutForm.email || !checkoutForm.primaryPhone || !checkoutForm.fullAddress) {
-      setNotice({ type: 'error', text: 'Please fill in all required delivery details before submitting.' });
-      return;
-    }
 
-    setIsProcessing(true);
-    setNotice({ type: 'info', text: 'Submitting your manual order...' });
-
-    try {
-      const orderPayload = {
-        customerDetails: {
-          name: checkoutForm.fullName,
-          email: checkoutForm.email,
-          phone: checkoutForm.primaryPhone,
-          secondaryPhone: checkoutForm.secondaryPhone,
-          address: checkoutForm.fullAddress,
-          upiId: checkoutForm.upiId,
-        },
-        items: cartItems.map((item) => ({
-          productId: item._id,
-          quantity: item.quantity,
-          customizationDetails: item.giftMessage || '',
-        })),
-        userId: user?.id,
-        totalAmount: total,
-        status: 'pending',
-        paymentStatus: 'pending', // Pending verification for manual
-        paymentDetails: {
-          method: 'upi_manual',
-        },
-      };
-
-      const orderRes = await fetch(`${API_BASE_URL}/api/orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderPayload),
-      });
-
-      if (!orderRes.ok) throw new Error('Could not save order.');
-
-      clearCart();
-      setShowQR(false);
-      setNotice({ type: 'success', text: 'Order submitted! We will verify your payment soon.' });
-    } catch (error) {
-      setNotice({ type: 'error', text: 'Failed to submit order.' });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   const handleCheckout = async () => {
     if (!cartItems.length) {

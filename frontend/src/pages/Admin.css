@@ -958,6 +958,145 @@
   color: #059669;
 }
 
+/* ================================================ */
+/* === PREMIUM STATUS SELECT                     === */
+/* ================================================ */
+
+.status-select-wrapper {
+  position: relative;
+}
+
+.status-pill-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 100px;
+  padding: 0.45rem 2rem 0.45rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='currentColor' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  transition: all 0.2s ease;
+  outline: none;
+  min-width: 130px;
+}
+
+.status-pill-select.status-pending       { background-color: #fffbeb; color: #d97706; border: 1.5px solid #fcd34d; }
+.status-pill-select.status-in-progress   { background-color: #eff6ff; color: #2563eb; border: 1.5px solid #93c5fd; }
+.status-pill-select.status-ready         { background-color: #f0fdf4; color: #16a34a; border: 1.5px solid #86efac; }
+.status-pill-select.status-shipped       { background-color: #ecfeff; color: #0891b2; border: 1.5px solid #67e8f9; }
+.status-pill-select.status-delivered     { background-color: #f0fdf4; color: #15803d; border: 1.5px solid #4ade80; }
+.status-pill-select.status-cancelled     { background-color: #fff1f2; color: #be123c; border: 1.5px solid #fda4af; }
+
+.status-pill-select:hover {
+  filter: brightness(0.96);
+  transform: scale(1.02);
+}
+
+/* ================================================ */
+/* === PREMIUM ORDER DETAILS CARD               === */
+/* ================================================ */
+
+.order-details-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 200px;
+}
+
+/* Payment Toggle */
+.payment-toggle-group {
+  display: flex;
+  border-radius: 100px;
+  overflow: hidden;
+  border: 1.5px solid #e5e7eb;
+  width: fit-content;
+  background: #f9fafb;
+}
+
+.payment-toggle-btn {
+  padding: 0.3rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #9ca3af;
+}
+
+.payment-toggle-btn.active.pending {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.payment-toggle-btn.active.paid {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* Address Display */
+.order-address-display {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.address-icon {
+  font-size: 0.75rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.address-text {
+  color: #374151;
+}
+
+/* UPI Display */
+.upi-display {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--primary-dark);
+  font-weight: 600;
+  background: var(--secondary-light);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+/* ================================================ */
+/* === DARK MODE — Status & Details             === */
+/* ================================================ */
+
+[data-theme='dark'] .status-pill-select.status-pending     { background-color: #2a2010; color: #fbbf24; border-color: #78450d; }
+[data-theme='dark'] .status-pill-select.status-in-progress { background-color: #101828; color: #60a5fa; border-color: #1d4ed8; }
+[data-theme='dark'] .status-pill-select.status-ready       { background-color: #0a1e12; color: #4ade80; border-color: #166534; }
+[data-theme='dark'] .status-pill-select.status-shipped     { background-color: #0a1e22; color: #38bdf8; border-color: #0e7490; }
+[data-theme='dark'] .status-pill-select.status-delivered   { background-color: #0a1e12; color: #86efac; border-color: #166534; }
+[data-theme='dark'] .status-pill-select.status-cancelled   { background-color: #1c0a0e; color: #f87171; border-color: #9f1239; }
+
+[data-theme='dark'] .payment-toggle-group {
+  border-color: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+}
+
+[data-theme='dark'] .payment-toggle-btn { color: #6b7280; }
+[data-theme='dark'] .payment-toggle-btn.active.pending { background: #2a2010; color: #fbbf24; }
+[data-theme='dark'] .payment-toggle-btn.active.paid    { background: #0a1e12; color: #4ade80; }
+
+[data-theme='dark'] .address-text { color: #c8beb5; }
+[data-theme='dark'] .order-address-display { color: #7a6d63; }
+
+
 /* ================================================== */
 /* === DARK MODE OVERRIDES (Admin Dashboard)      === */
 /* ================================================== */

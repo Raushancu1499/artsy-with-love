@@ -708,41 +708,50 @@ function Admin() {
                           </td>
                           <td><span className="pill pill-role">{isCustom ? 'Custom' : 'Fixed'}</span></td>
                           <td>
-                            <select 
-                              className={`pill-status-select ${statusClass}`}
-                              value={order.status || 'pending'}
-                              onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
-                            >
-                              <option value="pending">Pending</option>
-                              <option value="in progress">In Progress</option>
-                              <option value="ready">Ready</option>
-                              <option value="shipped">Shipped</option>
-                              <option value="delivered">Delivered</option>
-                              <option value="cancelled">Cancelled</option>
-                            </select>
+                            <div className="status-select-wrapper">
+                              <select 
+                                className={`status-pill-select status-${statusClass}`}
+                                value={order.status || 'pending'}
+                                onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
+                              >
+                                <option value="pending">⏳ Pending</option>
+                                <option value="in progress">🔧 In Progress</option>
+                                <option value="ready">✅ Ready</option>
+                                <option value="shipped">🚚 Shipped</option>
+                                <option value="delivered">🎉 Delivered</option>
+                                <option value="cancelled">❌ Cancelled</option>
+                              </select>
+                            </div>
                           </td>
                           <td>Rs. {Number(order.totalAmount || 0)}</td>
                           <td>
-                            <div className="order-meta">
-                              <select 
-                                className="payment-status-select"
-                                value={order.paymentStatus || 'pending'}
-                                onChange={(e) => handleUpdatePaymentStatus(order._id, e.target.value)}
-                                style={{
-                                  fontSize: '0.75rem',
-                                  padding: '2px 4px',
-                                  borderRadius: '4px',
-                                  border: '1px solid #ddd',
-                                  marginBottom: '4px',
-                                  display: 'block'
-                                }}
-                              >
-                                <option value="pending">pending payment</option>
-                                <option value="completed">completed payment</option>
-                              </select>
-                              <span>{order.customerDetails?.address || 'Address pending'}</span>
+                            <div className="order-details-card">
+                              {/* Payment Toggle */}
+                              <div className="payment-toggle-group">
+                                <button
+                                  type="button"
+                                  className={`payment-toggle-btn ${(order.paymentStatus || 'pending') === 'pending' ? 'active pending' : ''}`}
+                                  onClick={() => handleUpdatePaymentStatus(order._id, 'pending')}
+                                >Unpaid</button>
+                                <button
+                                  type="button"
+                                  className={`payment-toggle-btn ${(order.paymentStatus || 'pending') === 'completed' ? 'active paid' : ''}`}
+                                  onClick={() => handleUpdatePaymentStatus(order._id, 'completed')}
+                                >Paid ✓</button>
+                              </div>
+
+                              {/* Address */}
+                              <div className="order-address-display">
+                                <span className="address-icon">📍</span>
+                                <span className="address-text">{order.customerDetails?.address || 'No address provided'}</span>
+                              </div>
+
+                              {/* UPI */}
                               {order.customerDetails?.upiId && (
-                                <span style={{ color: 'var(--primary-dark)', fontWeight: 'bold' }}>UPI: {order.customerDetails.upiId}</span>
+                                <div className="upi-display">
+                                  <span>💳</span>
+                                  <span>{order.customerDetails.upiId}</span>
+                                </div>
                               )}
                             </div>
                           </td>

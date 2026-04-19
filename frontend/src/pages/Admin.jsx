@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config/api';
 import './Admin.css';
 import {
@@ -13,7 +14,9 @@ import {
   UserCheck,
   Plus,
   Minus,
-  X
+  X,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 const INITIAL_FORM = {
@@ -53,6 +56,30 @@ function Admin() {
     localStorage.setItem('theme', newTheme);
   };
   const [activeTab, setActiveTab] = useState('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Sync tab with URL path
+  useEffect(() => {
+    const { pathname } = location;
+    
+    if (pathname.includes('/admin/orders')) {
+      setActiveTab('orders');
+    } else if (pathname.includes('/admin/products')) {
+      setActiveTab('products');
+    } else if (pathname.includes('/admin/customers')) {
+      setActiveTab('customers');
+    } else if (pathname.includes('/admin/settings')) {
+      setActiveTab('settings');
+    } else {
+      setActiveTab('dashboard');
+    }
+  }, [location.pathname]);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    navigate(`/admin/${tab}`);
+  };
   const [loading, setLoading] = useState(false);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
@@ -428,11 +455,11 @@ function Admin() {
           </div>
 
           <ul className="admin-nav">
-            <li><button className={`admin-nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}><LayoutDashboard size={18} /> Dashboard</button></li>
-            <li><button className={`admin-nav-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}><ShoppingBag size={18} /> Orders</button></li>
-            <li><button className={`admin-nav-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}><Palette size={18} /> Marketplace</button></li>
-            <li><button className={`admin-nav-btn ${activeTab === 'customers' ? 'active' : ''}`} onClick={() => setActiveTab('customers')}><Users size={18} /> Customers</button></li>
-            <li><button className={`admin-nav-btn ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}><Settings size={18} /> Settings</button></li>
+            <li><button className={`admin-nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => handleTabChange('dashboard')}><LayoutDashboard size={18} /> Dashboard</button></li>
+            <li><button className={`admin-nav-btn ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => handleTabChange('orders')}><ShoppingBag size={18} /> Orders</button></li>
+            <li><button className={`admin-nav-btn ${activeTab === 'products' ? 'active' : ''}`} onClick={() => handleTabChange('products')}><Package size={18} /> Products</button></li>
+            <li><button className={`admin-nav-btn ${activeTab === 'customers' ? 'active' : ''}`} onClick={() => handleTabChange('customers')}><Users size={18} /> Customers</button></li>
+            <li><button className={`admin-nav-btn ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => handleTabChange('settings')}><Settings size={18} /> Settings</button></li>
           </ul>
         </aside>
 

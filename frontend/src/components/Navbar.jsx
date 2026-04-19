@@ -1,178 +1,154 @@
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { 
   ShoppingBag, 
-  Search, 
   Menu, 
   X, 
   User, 
-  LogOut, 
+  Search, 
   Heart,
-  Sun,
+  LogOut,
   Moon,
-  LayoutDashboard
+  Sun,
+  UserCheck
 } from 'lucide-react';
-import { useState } from 'react';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
-function Navbar() {
+const Navbar = () => {
+  const { user, logout, isAuthenticated, isAdmin } = useAuth();
   const { getCartCount } = useCart();
-  const { isAuthenticated, user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  const closeMenus = () => {
+    setIsMobileMenuOpen(false);
+    setIsUserMenuOpen(false);
+    setIsSearchOpen(false);
   };
 
   const handleSearch = (e) => {
-    const q = e.target.value;
-    setSearchQuery(q);
-    if (q.trim()) {
-      navigate(`/products?q=${encodeURIComponent(q)}`);
-    } else {
-      navigate('/products');
-    }
+    setSearchQuery(e.target.value);
+    // Navigation/Filter logic would go here
   };
 
   const firstName = user?.name?.split(' ')[0] || 'Account';
 
-  const closeMenus = () => {
-    setIsSearchOpen(false);
-    setIsMobileMenuOpen(false);
-    setIsUserMenuOpen(false);
-  };
-
   return (
     <nav className="navbar glass-nav">
-      {isAdmin && (
-        <div className="admin-management-banner">
-          <div className="container banner-flex">
-            <span className="banner-status"><LayoutDashboard size={14} /> Management Mode Active</span>
-            <div className="banner-links">
-              <Link to="/admin">Go to Dashboard</Link>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="container navbar-container">
-        <button
-          type="button"
-          className="mobile-menu-btn"
-          aria-label="Menu"
-          aria-expanded={isMobileMenuOpen}
-          onClick={() => setIsMobileMenuOpen(prev => !prev)}
-        >
-          <Menu size={24} />
-        </button>
+          <button 
+            type="button" 
+            className="mobile-menu-btn" 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
 
-        <Link to="/" className="brand-logo" onClick={closeMenus}>
-          <Heart size={20} className="brand-icon" />
-          <span className="brand-text">Artsy With Love</span>
-        </Link>
-
-        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          <Link to="/" onClick={closeMenus}>Home</Link>
-          <Link to="/products" onClick={closeMenus}>Shop</Link>
-          {!isAdmin && <Link to="/custom-order" onClick={closeMenus}>Custom Gifts</Link>}
-          <Link to="/about" onClick={closeMenus}>Our Story</Link>
-          <Link to="/faq" onClick={closeMenus}>FAQ</Link>
-        </div>
-
-        <div className="nav-actions">
-          {isSearchOpen ? (
-            <div className="search-group animate-slide-in">
-              <input
-                type="text"
-                placeholder="Search treasures..."
-                className="nav-search-input"
-                autoFocus
-                value={searchQuery}
-                onChange={handleSearch}
-              />
-              <button type="button" className="icon-btn" onClick={() => setIsSearchOpen(false)} aria-label="Close search">
-                <X size={20} />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="icon-btn"
-              onClick={() => {
-                setIsSearchOpen(true);
-                setIsMobileMenuOpen(false);
-              }}
-              aria-label="Search"
-            >
-              <Search size={22} />
-            </button>
-          )}
-
-          <Link to="/cart" className="icon-btn cart-btn" onClick={closeMenus}>
-            <ShoppingBag size={22} />
-            {getCartCount() > 0 && <span className="cart-badge">{getCartCount()}</span>}
+          <Link to="/" className="brand-logo" onClick={closeMenus}>
+            <Heart size={20} className="brand-icon" />
+            <span className="brand-text">Artsy With Love</span>
           </Link>
 
-          {isAuthenticated ? (
-            <div className="user-nav-group">
-              <div className="user-dropdown-container">
+          <div className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+            <Link to="/" onClick={closeMenus}>Home</Link>
+            <Link to="/products" onClick={closeMenus}>Shop</Link>
+            {!isAdmin && <Link to="/custom-order" onClick={closeMenus}>Custom Gifts</Link>}
+            <Link to="/about" onClick={closeMenus}>Our Story</Link>
+            <Link to="/faq" onClick={closeMenus}>FAQ</Link>
+          </div>
+
+          <div className="nav-actions">
+            {isSearchOpen ? (
+              <div className="search-group animate-slide-in">
+                <input
+                  type="text"
+                  placeholder="Search treasures..."
+                  className="nav-search-input"
+                  autoFocus
+                  value={searchQuery}
+                  onChange={handleSearch}
+                />
+                <button type="button" className="icon-btn" onClick={() => setIsSearchOpen(false)} aria-label="Close search">
+                  <X size={20} />
+                </button>
+              </div>
+            ) : (
+              <button type="button" className="icon-btn search-btn" onClick={() => setIsSearchOpen(true)} aria-label="Search">
+                <Search size={22} />
+              </button>
+            )}
+
+            <Link to="/cart" className="icon-btn cart-btn" onClick={closeMenus}>
+              <ShoppingBag size={22} />
+              {getCartCount() > 0 && <span className="cart-badge">{getCartCount()}</span>}
+            </Link>
+
+            {isAuthenticated ? (
+              <div className="user-nav-group">
+                <div className="user-dropdown-container">
+                  <button 
+                    type="button" 
+                    className={`icon-btn user-name ${isUserMenuOpen ? 'active' : ''}`}
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  >
+                    <User size={22} />
+                    <span className="user-label">{firstName}</span>
+                  </button>
+                  
+                  {isUserMenuOpen && (
+                    <div className="user-dropdown-menu animate-fade-in" style={{ 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      position: 'absolute', 
+                      top: '100%', 
+                      right: '0', 
+                      zIndex: 1000 
+                    }}>
+                      <Link to="/profile" onClick={closeMenus}>View Profile</Link>
+                      {!isAdmin && <Link to="/my-orders" onClick={closeMenus}>Order History</Link>}
+                      {isAdmin && <Link to="/admin" onClick={closeMenus}>Admin Dashboard</Link>}
+                      <button type="button" onClick={logout} className="dropdown-logout-btn">
+                        <LogOut size={16} /> Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
                 <button 
                   type="button" 
-                  className={`icon-btn user-name ${isUserMenuOpen ? 'active' : ''}`}
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="icon-btn theme-toggle" 
+                  onClick={toggleTheme}
+                  title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
                 >
-                  <User size={22} />
-                  <span className="user-label">{firstName}</span>
+                  {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />} 
                 </button>
-                
-                {isUserMenuOpen && (
-                  <div className="user-dropdown-menu animate-fade-in" style={{ 
-                    display: 'flex', 
-                    flexDirection: 'column', 
-                    position: 'absolute', 
-                    top: '100%', 
-                    right: '0', 
-                    zIndex: 1000 
-                  }}>
-                    <Link to="/profile" onClick={closeMenus}>View Profile</Link>
-                    {!isAdmin && <Link to="/my-orders" onClick={closeMenus}>Order History</Link>}
-                    {isAdmin && <Link to="/admin" onClick={closeMenus}>Admin Dashboard</Link>}
-                    <button type="button" onClick={logout} className="dropdown-logout-btn">
-                      <LogOut size={16} /> Logout
-                    </button>
-                  </div>
-                )}
               </div>
-              
-              <button 
-                type="button" 
-                className="icon-btn theme-toggle" 
-                onClick={toggleTheme}
-                title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
-              >
-                {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />} 
-              </button>
-            </div>
-          ) : (
-            <Link to="/login" className="icon-btn login-nav-link" aria-label="Login" onClick={closeMenus}>
-              <User size={22} />
-              <span className="login-text">Login</span>
-            </Link>
-          )}
+            ) : (
+              <Link to="/login" className="icon-btn login-nav-link" aria-label="Login" onClick={closeMenus}>
+                <User size={22} />
+                <span className="login-text">Login</span>
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
   );
-}
+};
 
 export default Navbar;

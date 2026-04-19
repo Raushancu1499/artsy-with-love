@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import API_BASE_URL from '../config/api';
+import { Sparkles } from 'lucide-react';
 import './Catalog.css';
 
 function Catalog() {
@@ -38,10 +39,10 @@ function Catalog() {
     <div className="catalog-page">
       <section className="catalog-header">
         <div className="container">
-          <p className="text-accent" style={{fontSize: '1.5rem', marginBottom: '0'}}>Our Collection</p>
+          <p className="catalog-eyebrow"><Sparkles size={15} /> Our Collection</p>
           <h1 className="page-title">Handcrafted Treasures</h1>
-          <p>
-            Explore our curated selection of artisanal crochet gifts, 
+          <p className="catalog-sub">
+            Explore our curated selection of artisanal crochet gifts,
             each made with precision and a whole lot of love.
           </p>
         </div>

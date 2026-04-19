@@ -957,3 +957,191 @@
   background: #ecfdf5;
   color: #059669;
 }
+
+/* ================================================== */
+/* === DARK MODE OVERRIDES (Admin Dashboard)      === */
+/* ================================================== */
+
+[data-theme='dark'] .admin-page {
+  background-color: #141210;
+  color: #f0ece4;
+}
+
+[data-theme='dark'] .admin-content {
+  color: #f0ece4;
+}
+
+/* --- Metrics & Cards --- */
+[data-theme='dark'] .metric-card,
+[data-theme='dark'] .admin-subcard,
+[data-theme='dark'] .premium-card,
+[data-theme='dark'] .glass-card {
+  background: #1e1a18;
+  border-color: rgba(255,255,255,0.06);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+[data-theme='dark'] .insight-card {
+  background: linear-gradient(180deg, rgba(30,26,24,0.98) 0%, rgba(25,20,18,0.96) 100%);
+  border-color: rgba(255,255,255,0.05);
+}
+
+[data-theme='dark'] .metric-value,
+[data-theme='dark'] .insight-value {
+  color: #f0ece4;
+}
+
+[data-theme='dark'] .metric-label {
+  color: #7a6d63;
+}
+
+[data-theme='dark'] .admin-header h1,
+[data-theme='dark'] .editorial-title,
+[data-theme='dark'] .category-title {
+  color: #f0ece4;
+}
+
+[data-theme='dark'] .admin-header p {
+  color: #8a7d73;
+}
+
+/* --- Table --- */
+[data-theme='dark'] .premium-table th {
+  color: #7a6d63;
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+
+[data-theme='dark'] .premium-table td {
+  color: #c8beb5;
+  border-bottom-color: rgba(255,255,255,0.04);
+}
+
+[data-theme='dark'] .order-customer strong,
+[data-theme='dark'] .p-name,
+[data-theme='dark'] .activity-content strong {
+  color: #f0ece4;
+}
+
+[data-theme='dark'] .order-customer span,
+[data-theme='dark'] .order-meta span,
+[data-theme='dark'] .activity-content p,
+[data-theme='dark'] .analytics-empty {
+  color: #7a6d63;
+}
+
+/* --- Activity & Timeline --- */
+[data-theme='dark'] .activity-item,
+[data-theme='dark'] .inventory-watch-item {
+  border-top-color: rgba(255,255,255,0.05);
+}
+
+[data-theme='dark'] .progress-track {
+  background: rgba(255,255,255,0.07);
+}
+
+[data-theme='dark'] .analytics-card-header h3,
+[data-theme='dark'] .analytics-card-header strong {
+  color: #f0ece4;
+}
+
+[data-theme='dark'] .status-breakdown-meta {
+  color: #9a8d83;
+}
+
+[data-theme='dark'] .status-breakdown-meta strong {
+  color: #f0ece4;
+}
+
+/* --- Forms --- */
+[data-theme='dark'] .admin-select {
+  background: #1e1a18;
+  color: #f0ece4;
+  border-color: rgba(255,255,255,0.1);
+}
+
+[data-theme='dark'] .admin-input,
+[data-theme='dark'] .admin-input-mini {
+  color: #f0ece4;
+  border-bottom-color: rgba(255,255,255,0.12);
+}
+
+[data-theme='dark'] .admin-input:focus,
+[data-theme='dark'] .admin-input-mini:focus {
+  border-bottom-color: #fbbf24;
+}
+
+[data-theme='dark'] .upload-box {
+  border-color: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+}
+
+[data-theme='dark'] .upload-label {
+  color: #9a8d83;
+}
+
+/* --- Subnav --- */
+[data-theme='dark'] .subnav-btn {
+  background: #1e1a18;
+  border-color: rgba(255,255,255,0.08);
+  color: #c8beb5;
+}
+
+[data-theme='dark'] .subnav-btn:hover:not(.active) {
+  background: rgba(255,255,255,0.05);
+  border-color: #fbbf24;
+  color: #f0ece4;
+}
+
+/* --- Qty Control --- */
+[data-theme='dark'] .qty-btn {
+  background: #1e1a18;
+  border-color: rgba(255,255,255,0.08);
+  color: #c8beb5;
+}
+
+/* --- Status Pills --- */
+[data-theme='dark'] .pill-role {
+  background: rgba(255,255,255,0.08);
+  color: #c8beb5;
+}
+
+/* --- Category Section --- */
+[data-theme='dark'] .category-section-header {
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+
+[data-theme='dark'] .empty-marketplace {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.08);
+  color: #7a6d63;
+}
+
+/* --- Controls --- */
+[data-theme='dark'] .edit-btn {
+  background: #3a2f10;
+  color: #fbbf24;
+}
+
+[data-theme='dark'] .edit-btn:hover {
+  background: #fbbf24;
+  color: #000;
+}
+
+[data-theme='dark'] .delete-btn {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+[data-theme='dark'] .form-section {
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+
+[data-theme='dark'] .form-section h4 {
+  color: #f0ece4;
+}
+
+[data-theme='dark'] .status-item {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.06);
+}
+

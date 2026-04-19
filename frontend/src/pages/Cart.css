@@ -165,10 +165,10 @@
 }
 
 .checkout-card {
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--card-bg);
   border-radius: var(--radius-md);
   padding: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
 }
 
 .checkout-card h4 {
@@ -196,11 +196,11 @@
 .checkout-form input,
 .checkout-form textarea {
   width: 100%;
-  border: 1px solid rgba(45, 35, 30, 0.12);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 0.9rem 1rem;
   font: inherit;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--card-bg);
   color: var(--text-dark);
 }
 
@@ -232,7 +232,7 @@
 .upi-direct-options {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -251,14 +251,14 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: #eee;
+  background: var(--border);
   z-index: 1;
 }
 
 .selection-divider span {
   position: relative;
   z-index: 2;
-  background: #fff;
+  background: var(--card-bg);
   padding: 0 1rem;
   font-size: 0.75rem;
   font-weight: 700;
@@ -287,7 +287,7 @@
 .qr-container {
   margin-top: 1.5rem;
   padding: 1.5rem;
-  background: white;
+  background: var(--card-bg);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   text-align: center;

@@ -294,4 +294,31 @@
   background: rgba(255, 77, 77, 0.1);
 }
 
+/* --- Navbar Dark Mode --- */
+[data-theme='dark'] .navbar,
+[data-theme='dark'] .glass-nav {
+  background: rgba(26, 22, 20, 0.92) !important;
+  border-bottom-color: rgba(255,255,255,0.06) !important;
+}
 
+[data-theme='dark'] .user-dropdown-menu {
+  background: #1e1a18;
+  border-color: rgba(255,255,255,0.08);
+}
+
+[data-theme='dark'] .user-dropdown-menu::after {
+  background: #1e1a18;
+  border-color: rgba(255,255,255,0.08);
+}
+
+[data-theme='dark'] .user-dropdown-menu a {
+  color: #c8beb5;
+}
+
+[data-theme='dark'] .nav-links a {
+  color: var(--text-dark);
+}
+
+[data-theme='dark'] .login-text {
+  color: var(--text-dark);
+}

@@ -1,7 +1,7 @@
 .my-orders-page {
   padding: 4rem 0;
   min-height: 80vh;
-  background-color: #fafafa;
+  background-color: var(--background);
 }
 
 .orders-header {
@@ -18,19 +18,19 @@
 }
 
 .order-card {
-  background: white;
+  background: var(--card-bg);
   padding: 0;
   overflow: hidden;
-  border: 1px solid #eee;
+  border: 1px solid var(--border);
 }
 
 .order-card-header {
   padding: 1.5rem;
-  background: #f8f8f8;
+  background: var(--background);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border);
 }
 
 .order-id-group {
@@ -56,8 +56,8 @@
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   border-radius: 50px;
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
   font-size: 0.85rem;
   font-weight: 600;
 }
@@ -109,10 +109,10 @@
 }
 
 .order-summary {
-  background: #fdfdfd;
+  background: var(--card-bg);
   padding: 1.2rem;
   border-radius: var(--radius-md);
-  border: 1px solid #eee;
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -144,8 +144,8 @@
 .order-timeline {
   display: flex;
   padding: 1.5rem;
-  background: #fff;
-  border-top: 1px solid #eee;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
   position: relative;
   justify-content: space-between;
 }
@@ -179,8 +179,8 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #eee;
-  border: 4px solid white;
+  background: var(--border);
+  border: 4px solid var(--card-bg);
   margin-bottom: 0.5rem;
   transition: all 0.3s ease;
 }
@@ -221,3 +221,18 @@
     display: none;
   }
 }
+
+/* --- Dark Mode for My Orders --- */
+[data-theme='dark'] .order-status-pill.pending { background: #2a2010; color: #d4a827; }
+[data-theme='dark'] .order-status-pill.in-progress { background: #101828; color: #60a5fa; }
+[data-theme='dark'] .order-status-pill.ready { background: #180f2a; color: #a78bfa; }
+[data-theme='dark'] .order-status-pill.shipped { background: #0a1e22; color: #38bdf8; }
+[data-theme='dark'] .order-status-pill.delivered { background: #0a1e12; color: #4ade80; }
+
+[data-theme='dark'] .payment-badge.pending { background: #2a2010; color: #d4a827; }
+[data-theme='dark'] .payment-badge.completed { background: #0a1e12; color: #4ade80; }
+
+[data-theme='dark'] .item-thumb {
+  border-color: rgba(255,255,255,0.08);
+}
+

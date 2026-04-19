@@ -130,8 +130,8 @@
 }
 
 .cancel-btn {
-  background: #eee;
-  color: #666;
+  background: var(--border);
+  color: var(--text-light);
   width: 40px;
   height: 40px;
   border-radius: var(--radius-sm);

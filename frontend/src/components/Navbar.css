@@ -12,6 +12,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .brand-logo {
@@ -35,6 +37,17 @@
 .nav-links {
   display: none;
   gap: 2rem;
+  width: 100%;
+  order: 3;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.nav-links.mobile-open {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .nav-links a {
@@ -115,11 +128,21 @@
 }
 
 @media (min-width: 768px) {
+  .navbar-container {
+    flex-wrap: nowrap;
+  }
+
   .mobile-menu-btn {
     display: none;
   }
   .nav-links {
     display: flex;
+    width: auto;
+    order: 0;
+    padding-top: 0;
+    margin-top: 0;
+    border-top: none;
+    flex-direction: row;
   }
 }
 

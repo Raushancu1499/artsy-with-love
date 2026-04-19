@@ -1,84 +1,96 @@
 import { useState } from 'react';
 import './CustomOrder.css';
-import { Upload, Loader } from 'lucide-react';
+import { Upload, Loader, MessageCircle } from 'lucide-react';
+import API_BASE_URL from '../config/api';
+
+const INITIAL_FORM = {
+  name: '',
+  email: '',
+  primaryPhone: '',
+  secondaryPhone: '',
+  address: '',
+  productType: 'soft_toy',
+  date: '',
+  description: '',
+};
 
 function CustomOrder() {
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
+  const [formData, setFormData] = useState(INITIAL_FORM);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleFileChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFilePreview(reader.result?.toString() || '');
+    };
+    reader.readAsDataURL(selectedFile);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setStatus('Uploading image...');
+    setStatus('Submitting request...');
 
     try {
-      let imageUrl = '';
-      
-      // Upload image mechanism
-      if (file) {
-        const formData = new FormData();
-        formData.append('image', file);
-        
-        // Mock backend call
-        const uploadRes = await fetch('http://localhost:5000/api/upload', {
-          method: 'POST',
-          body: formData
-        });
-        
-        if (uploadRes.ok) {
-          const uploadData = await uploadRes.json();
-          imageUrl = uploadData.imageUrl;
-        } else {
-          // If server fails (due to no keys), mock visually
-          console.warn("Backend failed, mocking upload.");
-          imageUrl = 'https://via.placeholder.com/mock-url';
-        }
-      }
-
-      setStatus('Submitting order...');
-      
-      // Submit order logic
       const orderPayload = {
         customerDetails: {
-          name: document.getElementById('name').value,
-          email: document.getElementById('email').value,
-          phone: "0000000000", // Would be an input normally
-          address: "123 Street"
+          name: formData.name,
+          email: formData.email,
+          phone: formData.primaryPhone,
+          secondaryPhone: formData.secondaryPhone,
+          address: formData.address,
         },
-        items: [{
-          customizationDetails: document.getElementById('description').value,
-          uploadedImage: imageUrl
-        }],
-        status: 'pending'
+        items: [
+          {
+            customizationDetails: [
+              `Product type: ${formData.productType}`,
+              `Desired delivery date: ${formData.date || 'Flexible'}`,
+              `Description: ${formData.description}`,
+            ].join('\n'),
+            uploadedImage: filePreview,
+            quantity: 1,
+          },
+        ],
+        status: 'pending',
+        paymentStatus: 'pending',
       };
 
-      const orderRes = await fetch('http://localhost:5000/api/orders', {
+      const orderRes = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(orderPayload)
+        body: JSON.stringify(orderPayload),
       });
-      
-      if (orderRes.ok) {
-        setStatus('Request Submitted Successfully!');
-      } else {
-        setStatus('Submitted locally! (Backend down due to missing API keys)');
+
+      if (!orderRes.ok) {
+        const errorData = await orderRes.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Could not submit request.');
       }
 
-    } catch (err) {
-      console.error(err);
-      setStatus("Submitted locally! (Backend down due to missing db/keys)");
+      setStatus('Request submitted successfully.');
+      setFormData(INITIAL_FORM);
+      setFile(null);
+      setFilePreview('');
+    } catch (error) {
+      console.error(error);
+      setStatus(error.message || 'Submission failed.');
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
@@ -87,8 +99,8 @@ function CustomOrder() {
         <div className="custom-info">
           <h1 className="text-accent page-title">Request a Custom Gift</h1>
           <p className="page-desc">
-            Have a special idea in mind? A portrait amigurumi, a unique flower arrangement, or a specific keychain? 
-            Fill out the form below with your requirements and inspiration images. We'll review your request and get back to you with a price and timeline.
+            Have a special idea in mind? Share your inspiration, delivery details, and a reference image so we can
+            review your request and get back to you with a quote.
           </p>
           <div className="custom-steps">
             <div className="step">
@@ -114,15 +126,27 @@ function CustomOrder() {
           <form className="custom-form" onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="name">Your Name</label>
-              <input type="text" id="name" placeholder="Let us know who you are" required />
+              <input id="name" name="name" type="text" value={formData.name} onChange={handleChange} placeholder="Let us know who you are" required />
             </div>
             <div className="form-group">
               <label htmlFor="email">Email Address</label>
-              <input type="email" id="email" placeholder="Where should we send the quote?" required />
+              <input id="email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Where should we send the quote?" required />
+            </div>
+            <div className="form-group">
+              <label htmlFor="primaryPhone">Primary Phone Number</label>
+              <input id="primaryPhone" name="primaryPhone" type="tel" value={formData.primaryPhone} onChange={handleChange} placeholder="Delivery contact number" required />
+            </div>
+            <div className="form-group">
+              <label htmlFor="secondaryPhone">Secondary Phone Number</label>
+              <input id="secondaryPhone" name="secondaryPhone" type="tel" value={formData.secondaryPhone} onChange={handleChange} placeholder="Alternate contact number" required />
+            </div>
+            <div className="form-group">
+              <label htmlFor="address">Full Address</label>
+              <textarea id="address" name="address" rows="3" value={formData.address} onChange={handleChange} placeholder="House number, street, area, city, state, pincode" required />
             </div>
             <div className="form-group">
               <label htmlFor="productType">Type of Product</label>
-              <select id="productType">
+              <select id="productType" name="productType" value={formData.productType} onChange={handleChange}>
                 <option value="soft_toy">Soft Toy / Amigurumi</option>
                 <option value="flower">Crochet Flowers</option>
                 <option value="keychain">Keychain</option>
@@ -131,20 +155,26 @@ function CustomOrder() {
             </div>
             <div className="form-group">
               <label htmlFor="date">Desired Delivery Date <span className="text-light">(approximate)</span></label>
-              <input type="date" id="date" />
+              <input id="date" name="date" type="date" value={formData.date} onChange={handleChange} />
             </div>
             <div className="form-group">
               <label htmlFor="description">Describe Your Idea in Detail</label>
-              <textarea id="description" rows="5" placeholder="Colors, size, specific details..." required></textarea>
+              <textarea id="description" name="description" rows="5" value={formData.description} onChange={handleChange} placeholder="Colors, size, specific details..." required />
             </div>
             <div className="form-group file-upload-group">
               <label className="file-upload-label">
                 <Upload size={24} />
-                <span>{file ? file.name : "Upload Inspiration Images"}</span>
+                <span>{file ? file.name : 'Upload Inspiration Images'}</span>
                 <input type="file" onChange={handleFileChange} accept="image/*" className="hidden-input" />
               </label>
             </div>
-            
+
+            {filePreview && (
+              <div className="file-preview">
+                <img src={filePreview} alt="Inspiration preview" />
+              </div>
+            )}
+
             {status && (
               <div style={{ padding: '10px', backgroundColor: 'var(--primary-light)', borderRadius: '8px', color: 'var(--primary-dark)', fontWeight: 'bold' }}>
                 {status}
@@ -152,7 +182,7 @@ function CustomOrder() {
             )}
 
             <button type="submit" disabled={loading} className="btn btn-primary w-100">
-              {loading ? <Loader className="animate-spin" /> : 'Submit Request'}
+              {loading ? <Loader className="animate-spin" /> : <><MessageCircle size={18} /> Submit Request</>}
             </button>
           </form>
         </div>

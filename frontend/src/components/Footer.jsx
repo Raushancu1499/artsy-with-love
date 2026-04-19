@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 import { Heart, Camera } from 'lucide-react';
 
@@ -13,9 +14,10 @@ function Footer() {
         <div className="footer-links">
           <h3>Quick Links</h3>
           <ul>
-            <li><a href="/products">Shop All</a></li>
-            <li><a href="/custom-order">Custom Orders</a></li>
-            <li><a href="/faq">FAQ</a></li>
+            <li><Link to="/products">Shop All</Link></li>
+            <li><Link to="/custom-order">Custom Orders</Link></li>
+            <li><Link to="/faq">FAQ</Link></li>
+            <li><Link to="/about">Our Story</Link></li>
           </ul>
         </div>
         <div className="footer-social">

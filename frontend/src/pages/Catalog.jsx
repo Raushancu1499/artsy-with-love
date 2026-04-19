@@ -6,7 +6,7 @@ import './Catalog.css';
 
 function Catalog() {
   const [searchParams] = useSearchParams();
-  const [category, setCategory] = useState('All');
+  const [category, setCategory] = useState(searchParams.get('category') || 'All');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 

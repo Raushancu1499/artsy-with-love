@@ -47,6 +47,19 @@ router.get('/products', async (req, res) => {
   }
 });
 
+// Get single product
+router.get('/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch product' });
+  }
+});
+
 // Get unique categories and their representative images
 router.get('/categories', async (req, res) => {
   try {
@@ -65,7 +78,7 @@ router.post('/upload', verifyToken, isAdmin, upload.single('image'), (req, res) 
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    res.json({ secure_url: req.file.path });
+    res.json({ secure_url: req.file.path, imageUrl: req.file.path });
   } catch (err) {
     res.status(500).json({ error: 'Upload failed' });
   }
@@ -169,9 +182,13 @@ router.get('/admin/users', verifyToken, isAdmin, async (req, res) => {
 router.post('/payments/create-order', async (req, res) => {
   try {
     const { amount, currency = 'INR', receipt = 'receipt#1' } = req.body;
+
+    if (!amount || Number(amount) <= 0) {
+      return res.status(400).json({ error: 'Amount must be greater than zero' });
+    }
     
     const options = {
-      amount: amount * 100, // amount in the smallest currency unit (paise)
+      amount: Math.round(Number(amount) * 100), // amount in the smallest currency unit (paise)
       currency,
       receipt
     };
@@ -187,6 +204,11 @@ router.post('/payments/create-order', async (req, res) => {
     console.error("RAZORPAY ERROR:", err);
     res.status(500).json({ error: 'Failed to create payment order', details: err.message });
   }
+});
+
+// Expose the public Razorpay key for checkout
+router.get('/payments/config', (req, res) => {
+  res.json({ keyId: process.env.RAZORPAY_KEY_ID || '' });
 });
 
 // Verify Razorpay Payment Details

@@ -7,10 +7,14 @@
   --primary-dark: #b5838d;
   --secondary: #f4d35e; /* Mustard accent */
   --secondary-light: #faf0ca;
+  --accent: #b5838d;
   --text-dark: #2d231e; /* Deeper brown for better contrast */
   --text-light: #6d594f;
   --background: #fdfaf5; /* Warm creamy off-white */
   --card-bg: #ffffff;
+  --white: #ffffff;
+  --error: #ef4444;
+  --success: #16a34a;
   --border: rgba(45, 35, 30, 0.08); /* Subtle but visible border */
   
   --font-main: 'Outfit', sans-serif;
@@ -138,6 +142,15 @@ img {
   margin-bottom: 40px;
 }
 
+.page-title {
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  color: var(--text-dark);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 0;
+  line-height: 1.1;
+}
+
 /* Labels */
 .badge {
   display: inline-block;
@@ -164,4 +177,14 @@ img {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
   border-color: var(--primary-light);
+}
+
+.animate-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

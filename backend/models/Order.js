@@ -5,7 +5,8 @@ const orderSchema = new mongoose.Schema({
   customerDetails: {
     name: { type: String, required: true },
     email: { type: String, required: true },
-    phone: { type: String, required: true }, 
+    phone: { type: String, required: true },
+    secondaryPhone: { type: String },
     address: { type: String, required: true }
   },
   items: [
@@ -23,6 +24,12 @@ const orderSchema = new mongoose.Schema({
     default: 'pending' 
   },
   paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+  paymentDetails: {
+    razorpayOrderId: { type: String },
+    razorpayPaymentId: { type: String },
+    razorpaySignature: { type: String },
+    method: { type: String, default: 'upi' }
+  },
   giftMode: {
     enabled: { type: Boolean, default: false },
     message: { type: String },

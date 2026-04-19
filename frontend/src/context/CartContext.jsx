@@ -1,40 +1,49 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 
 const CartContext = createContext();
+const STORAGE_KEY = 'artsyWithLoveCart';
+
+const getStoredCart = () => {
+  if (typeof window === 'undefined') return [];
+
+  const savedCart = window.localStorage.getItem(STORAGE_KEY);
+  if (!savedCart) return [];
+
+  try {
+    return JSON.parse(savedCart);
+  } catch {
+    window.localStorage.removeItem(STORAGE_KEY);
+    return [];
+  }
+};
 
 export function useCart() {
   return useContext(CartContext);
 }
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([]);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem('artsyWithLoveCart');
-    if (savedCart) {
-      try {
-        setCartItems(JSON.parse(savedCart));
-      } catch (e) {
-        console.error("Failed to parse cart");
-      }
-    }
-  }, []);
+  const [cartItems, setCartItems] = useState(getStoredCart);
 
   // Sync to localStorage on change
   useEffect(() => {
-    localStorage.setItem('artsyWithLoveCart', JSON.stringify(cartItems));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
   }, [cartItems]);
 
   const addToCart = (product, quantity = 1) => {
     setCartItems(prev => {
       const existing = prev.find(item => item._id === product._id);
+      const normalizedProduct = {
+        ...product,
+        price: Number(product.price) || 0,
+        image: product.images?.[0] || product.image || '',
+      };
+
       if (existing) {
         return prev.map(item => 
-          item._id === product._id ? { ...item, quantity: item.quantity + quantity } : item
+          item._id === product._id ? { ...item, ...normalizedProduct, quantity: item.quantity + quantity } : item
         );
       }
-      return [...prev, { ...product, quantity }];
+      return [...prev, { ...normalizedProduct, quantity }];
     });
   };
 
@@ -50,7 +59,7 @@ export function CartProvider({ children }) {
   };
 
   const getSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => total + (Number(item.price) * item.quantity), 0);
   };
 
   const getCartCount = () => {

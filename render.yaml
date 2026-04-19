@@ -3,6 +3,7 @@ services:
   - type: web
     name: artsy-backend
     env: node
+    rootDir: backend
     buildCommand: npm install
     startCommand: npm start
     envVars:
@@ -15,8 +16,9 @@ services:
   - type: web
     name: artsy-frontend
     env: static
+    rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: ./frontend/dist
+    staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
         value: https://artsy-backend.onrender.com # Change this if your render name differs

@@ -131,6 +131,19 @@
   color: var(--text-dark);
 }
 
+.file-preview {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--white);
+}
+
+.file-preview img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 .hidden-input {
   display: none;
 }

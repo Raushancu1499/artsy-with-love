@@ -104,6 +104,12 @@
   border-color: var(--primary-dark);
 }
 
+.p-actions {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
 .w-100 {
   width: 100%;
   padding: 1rem;
@@ -125,6 +131,18 @@
   gap: 0.5rem;
   color: var(--text-light);
   font-size: 0.9rem;
+}
+
+.detail-notice {
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+}
+
+.detail-notice-success {
+  background: rgba(22, 163, 74, 0.12);
+  color: #14532d;
+  border: 1px solid rgba(22, 163, 74, 0.2);
 }
 
 @media (min-width: 768px) {

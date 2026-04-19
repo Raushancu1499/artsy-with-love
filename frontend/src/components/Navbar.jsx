@@ -1,6 +1,6 @@
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ShoppingBag, Search, Menu, Heart, User, LogOut, LayoutDashboard, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
@@ -11,6 +11,7 @@ function Navbar() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
 
   const handleSearch = (e) => {
@@ -22,6 +23,14 @@ function Navbar() {
       navigate('/products');
     }
   };
+
+  const firstName = user?.name?.split(' ')[0] || 'Account';
+
+  const closeMenus = () => {
+    setIsSearchOpen(false);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <nav className="navbar glass-nav">
       {isAdmin && (
@@ -34,60 +43,77 @@ function Navbar() {
           </div>
         </div>
       )}
+
       <div className="container navbar-container">
-        <button className="mobile-menu-btn" aria-label="Menu">
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          aria-label="Menu"
+          aria-expanded={isMobileMenuOpen}
+          onClick={() => setIsMobileMenuOpen(prev => !prev)}
+        >
           <Menu size={24} />
         </button>
 
-        <Link to="/" className="brand-logo">
+        <Link to="/" className="brand-logo" onClick={closeMenus}>
           <Heart size={20} className="brand-icon" />
           <span className="brand-text">Artsy With Love</span>
         </Link>
 
-        <div className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/products">Shop</Link>
-          {!isAdmin && <Link to="/custom-order">Custom Gifts</Link>}
-          <Link to="/about">Our Story</Link>
+        <div className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          <Link to="/" onClick={closeMenus}>Home</Link>
+          <Link to="/products" onClick={closeMenus}>Shop</Link>
+          {!isAdmin && <Link to="/custom-order" onClick={closeMenus}>Custom Gifts</Link>}
+          <Link to="/about" onClick={closeMenus}>Our Story</Link>
+          <Link to="/faq" onClick={closeMenus}>FAQ</Link>
         </div>
 
         <div className="nav-actions">
           {isSearchOpen ? (
             <div className="search-group animate-slide-in">
-              <input 
-                type="text" 
-                placeholder="Search treasures..." 
+              <input
+                type="text"
+                placeholder="Search treasures..."
                 className="nav-search-input"
                 autoFocus
                 value={searchQuery}
                 onChange={handleSearch}
               />
-              <button className="icon-btn" onClick={() => setIsSearchOpen(false)}>
+              <button type="button" className="icon-btn" onClick={() => setIsSearchOpen(false)} aria-label="Close search">
                 <X size={20} />
               </button>
             </div>
           ) : (
-            <button className="icon-btn" onClick={() => setIsSearchOpen(true)} aria-label="Search">
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={() => {
+                setIsSearchOpen(true);
+                setIsMobileMenuOpen(false);
+              }}
+              aria-label="Search"
+            >
               <Search size={22} />
             </button>
           )}
-          <Link to="/cart" className="icon-btn cart-btn">
+
+          <Link to="/cart" className="icon-btn cart-btn" onClick={closeMenus}>
             <ShoppingBag size={22} />
             {getCartCount() > 0 && <span className="cart-badge">{getCartCount()}</span>}
           </Link>
 
           {isAuthenticated ? (
             <div className="user-nav-group">
-              <Link to={isAdmin ? "/admin" : "/"} className="icon-btn user-name">
+              <Link to={isAdmin ? '/admin' : '/'} className="icon-btn user-name" onClick={closeMenus}>
                 <User size={22} />
-                <span className="user-label">{user.name.split(' ')[0]}</span>
+                <span className="user-label">{firstName}</span>
               </Link>
-              <button onClick={logout} className="icon-btn logout-btn" aria-label="Logout">
+              <button type="button" onClick={logout} className="icon-btn logout-btn" aria-label="Logout">
                 <LogOut size={20} />
               </button>
             </div>
           ) : (
-            <Link to="/login" className="icon-btn login-nav-link" aria-label="Login">
+            <Link to="/login" className="icon-btn login-nav-link" aria-label="Login" onClick={closeMenus}>
               <User size={22} />
               <span className="login-text">Login</span>
             </Link>

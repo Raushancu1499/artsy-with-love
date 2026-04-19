@@ -25,6 +25,18 @@ const INITIAL_FORM = {
   production: 'Ships in 3-5 days',
 };
 
+const formatOrderDate = (value) => {
+  if (!value) return 'Recently';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Recently';
+
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'short',
+  }).format(date);
+};
+
 function Admin() {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -102,7 +114,11 @@ function Admin() {
   }, []);
 
   useEffect(() => {
-    if (activeTab === 'dashboard') fetchStats();
+    if (activeTab === 'dashboard') {
+      fetchStats();
+      fetchOrders();
+      fetchProducts();
+    }
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'customers') fetchCustomers();
     if (activeTab === 'products') fetchProducts();
@@ -264,6 +280,80 @@ function Admin() {
     orderStatusFilter === 'all' ? true : order.status === orderStatusFilter
   ));
 
+  const totalOrders = orders.length;
+  const totalRevenue = Number(stats.revenue || 0);
+  const deliveredOrders = orders.filter((order) => order.status === 'delivered').length;
+  const activeOrders = orders.filter((order) => ['pending', 'in progress', 'ready', 'shipped'].includes(order.status)).length;
+  const customOrders = orders.filter((order) => order.items?.some((item) => {
+    const product = item.productId;
+    return !product || (typeof product === 'object' && product.type === 'custom');
+  })).length;
+  const averageOrderValue = totalOrders ? Math.round(totalRevenue / totalOrders) : 0;
+  const fulfillmentRate = totalOrders ? Math.round((deliveredOrders / totalOrders) * 100) : 0;
+  const lowStockProducts = [...products]
+    .filter((product) => Number(product.stock || 0) <= 3)
+    .sort((a, b) => Number(a.stock || 0) - Number(b.stock || 0))
+    .slice(0, 4);
+  const recentOrders = [...orders]
+    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+    .slice(0, 4);
+  const orderStatusSummary = [
+    {
+      label: 'Pending',
+      count: orders.filter((order) => order.status === 'pending').length,
+      tone: 'gold',
+    },
+    {
+      label: 'In Progress',
+      count: orders.filter((order) => order.status === 'in progress').length,
+      tone: 'blue',
+    },
+    {
+      label: 'Ready',
+      count: orders.filter((order) => order.status === 'ready').length,
+      tone: 'violet',
+    },
+    {
+      label: 'Delivered',
+      count: deliveredOrders,
+      tone: 'green',
+    },
+  ];
+  const categoryInsights = Object.entries(groupedProducts)
+    .map(([name, categoryProducts]) => ({
+      name,
+      count: categoryProducts.length,
+      share: products.length ? Math.round((categoryProducts.length / products.length) * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 4);
+  const dashboardHighlights = [
+    {
+      label: 'Average Order Value',
+      value: `Rs. ${averageOrderValue}`,
+      note: totalOrders ? 'Calculated from live order totals' : 'Will appear after the first paid order',
+      Icon: DollarSign,
+    },
+    {
+      label: 'Custom Requests',
+      value: customOrders,
+      note: customOrders ? 'Quote-based orders need attention' : 'No custom requests right now',
+      Icon: Palette,
+    },
+    {
+      label: 'Fulfilment Rate',
+      value: `${fulfillmentRate}%`,
+      note: deliveredOrders ? `${deliveredOrders} completed deliveries` : 'No completed deliveries yet',
+      Icon: TrendingUp,
+    },
+    {
+      label: 'Low Stock Alerts',
+      value: lowStockProducts.length,
+      note: lowStockProducts.length ? 'Restock these products soon' : 'Inventory health looks strong',
+      Icon: Package,
+    },
+  ];
+
   return (
     <div className="admin-page">
       <div className="container admin-container">
@@ -321,13 +411,142 @@ function Admin() {
                 </div>
               </div>
 
-              <div className="admin-card-row">
+              <div className="insight-grid">
+                {dashboardHighlights.map(({ label, value, note, Icon }) => {
+                  const InsightIcon = Icon;
+
+                  return (
+                    <div key={label} className="insight-card">
+                      <div className="insight-icon">
+                        <InsightIcon size={18} />
+                      </div>
+                      <span className="metric-label">{label}</span>
+                      <strong className="insight-value">{value}</strong>
+                      <p className="insight-note">{note}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="admin-card-row analytics-grid">
                 <div className="admin-subcard">
-                  <h3>Recent Activity</h3>
-                  <div className="activity-placeholder">
-                    <TrendingUp size={48} color="#eee" />
-                    <p>Analytics integration coming soon.</p>
+                  <div className="analytics-card-header">
+                    <div>
+                      <span className="analytics-kicker">Order Pulse</span>
+                      <h3>Fulfilment breakdown</h3>
+                    </div>
+                    <strong>{totalOrders} orders</strong>
                   </div>
+
+                  <div className="status-breakdown">
+                    {orderStatusSummary.map((status) => {
+                      const width = totalOrders ? Math.max(10, Math.round((status.count / totalOrders) * 100)) : 0;
+                      return (
+                        <div key={status.label} className="status-breakdown-row">
+                          <div className="status-breakdown-meta">
+                            <span>{status.label}</span>
+                            <strong>{status.count}</strong>
+                          </div>
+                          <div className="progress-track">
+                            <span
+                              className={`progress-fill ${status.tone}`}
+                              style={{ width: width ? `${width}%` : '0%' }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="admin-subcard">
+                  <div className="analytics-card-header">
+                    <div>
+                      <span className="analytics-kicker">Category Mix</span>
+                      <h3>Marketplace demand view</h3>
+                    </div>
+                    <strong>{products.length} listed</strong>
+                  </div>
+
+                  {categoryInsights.length > 0 ? (
+                    <div className="status-breakdown">
+                      {categoryInsights.map((category) => (
+                        <div key={category.name} className="status-breakdown-row">
+                          <div className="status-breakdown-meta">
+                            <span>{category.name}</span>
+                            <strong>{category.count} items</strong>
+                          </div>
+                          <div className="progress-track">
+                            <span
+                              className="progress-fill dark"
+                              style={{ width: `${Math.max(14, category.share)}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="analytics-empty">Add products to see which categories are leading the storefront.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="admin-card-row analytics-grid">
+                <div className="admin-subcard">
+                  <div className="analytics-card-header">
+                    <div>
+                      <span className="analytics-kicker">Recent Activity</span>
+                      <h3>Latest store movement</h3>
+                    </div>
+                    <strong>{activeOrders} active</strong>
+                  </div>
+
+                  {recentOrders.length > 0 ? (
+                    <div className="activity-list">
+                      {recentOrders.map((order) => (
+                        <div key={order._id} className="activity-item">
+                          <div className="activity-marker" />
+                          <div className="activity-content">
+                            <strong>{order.customerDetails?.name || 'Guest customer'} placed an order</strong>
+                            <p>
+                              {order.items?.length || 0} item(s) • {order.paymentStatus || 'pending'} payment • {order.status || 'pending'}
+                            </p>
+                          </div>
+                          <span className="activity-date">{formatOrderDate(order.createdAt)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="analytics-empty">Orders will appear here the moment customers begin checkout.</p>
+                  )}
+                </div>
+
+                <div className="admin-subcard">
+                  <div className="analytics-card-header">
+                    <div>
+                      <span className="analytics-kicker">Inventory Watch</span>
+                      <h3>Products that need attention</h3>
+                    </div>
+                    <strong>{lowStockProducts.length} alerts</strong>
+                  </div>
+
+                  {lowStockProducts.length > 0 ? (
+                    <div className="inventory-watch-list">
+                          {lowStockProducts.map((product) => (
+                        <div key={product._id} className="inventory-watch-item">
+                          <div>
+                            <strong>{product.name}</strong>
+                            <p>{product.category}</p>
+                          </div>
+                          <span className={`pill stock-pill ${Number(product.stock || 0) > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                            {Number(product.stock || 0)} left
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="analytics-empty">Everything is comfortably stocked right now.</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -484,23 +703,23 @@ function Admin() {
                                       </button>
                                     </div>
                                   </td>
-                                  <td style={{ minWidth: '150px' }}>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleEditProduct(product)}
-                                      className="icon-btn edit-btn"
-                                      style={{ background: '#fbbf24', color: '#000', padding: '6px 12px', fontSize: '0.8rem', marginRight: '8px' }}
-                                    >
-                                      Edit
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleDeleteProduct(product._id)}
-                                      className="icon-btn delete-btn"
-                                      style={{ background: '#fee2e2', color: '#111', padding: '6px 12px', fontSize: '0.8rem' }}
-                                    >
-                                      Delete
-                                    </button>
+                                  <td className="controls-cell">
+                                    <div className="control-actions">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleEditProduct(product)}
+                                        className="control-btn edit-btn"
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeleteProduct(product._id)}
+                                        className="control-btn delete-btn"
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
                                   </td>
                                 </tr>
                               ))}

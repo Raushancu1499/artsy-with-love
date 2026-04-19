@@ -9,6 +9,7 @@ import Cart from './pages/Cart';
 import CustomOrder from './pages/CustomOrder';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
+import MyOrders from './pages/MyOrders';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import { CartProvider } from './context/CartContext';
@@ -32,6 +33,14 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/login" element={<Login />} />
+                <Route
+                  path="/my-orders"
+                  element={
+                    <ProtectedRoute>
+                      <MyOrders />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/admin"
                   element={

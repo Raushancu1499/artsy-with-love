@@ -104,10 +104,15 @@ function Navbar() {
 
           {isAuthenticated ? (
             <div className="user-nav-group">
-              <Link to={isAdmin ? '/admin' : '/'} className="icon-btn user-name" onClick={closeMenus}>
+              <Link to={isAdmin ? '/admin' : '/my-orders'} className="icon-btn user-name" onClick={closeMenus}>
                 <User size={22} />
                 <span className="user-label">{firstName}</span>
               </Link>
+              {!isAdmin && (
+                <Link to="/my-orders" className="icon-btn" title="My Orders" onClick={closeMenus}>
+                  <ShoppingBag size={20} />
+                </Link>
+              )}
               <button type="button" onClick={logout} className="icon-btn logout-btn" aria-label="Logout">
                 <LogOut size={20} />
               </button>

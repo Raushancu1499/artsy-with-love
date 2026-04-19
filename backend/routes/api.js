@@ -143,6 +143,40 @@ router.post('/orders', async (req, res) => {
   }
 });
 
+// Update order status (Admin Only)
+router.patch('/orders/:id', verifyToken, isAdmin, async (req, res) => {
+  try {
+    const { status, paymentStatus } = req.body;
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (paymentStatus) updateData.paymentStatus = paymentStatus;
+
+    const order = await Order.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    res.json(order);
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to update order' });
+  }
+});
+
+// Get orders for current user
+router.get('/orders/my-orders', verifyToken, async (req, res) => {
+  try {
+    // Find by email or userId to be safe
+    const orders = await Order.find({ 
+      $or: [
+        { userId: req.user.id },
+        { "customerDetails.email": req.user.email }
+      ]
+    }).populate('items.productId').sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch your orders' });
+  }
+});
+
 // --- Integrations API ---
 const User = require('../models/User');
 

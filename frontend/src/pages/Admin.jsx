@@ -13,6 +13,7 @@ import {
   UserCheck,
   Plus,
   Minus,
+  X
 } from 'lucide-react';
 
 const INITIAL_FORM = {
@@ -46,6 +47,7 @@ function Admin() {
   const [loading, setLoading] = useState(false);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+  const [customerFilter, setCustomerFilter] = useState(null); // To filter orders by specific user
   const [isAddingNewCategory, setIsAddingNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -165,6 +167,57 @@ function Admin() {
     }
   };
 
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (res.ok) {
+        setOrders((prev) => prev.map((order) => (
+          order._id === orderId ? { ...order, status: newStatus } : order
+        )));
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to update order status');
+      }
+    } catch (error) {
+      console.error('Failed to update status', error);
+    }
+  };
+
+  const handleUpdatePaymentStatus = async (orderId, newPaymentStatus) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ paymentStatus: newPaymentStatus }),
+      });
+
+      if (res.ok) {
+        setOrders((prev) => prev.map((order) => (
+          order._id === orderId ? { ...order, paymentStatus: newPaymentStatus } : order
+        )));
+      }
+    } catch (error) {
+      console.error('Failed to update payment status', error);
+    }
+  };
+
+  const handleViewUserOrders = (customer) => {
+    setCustomerFilter(customer);
+    setOrderStatusFilter('all');
+    setActiveTab('orders');
+  };
+
   const handleEditProduct = (product) => {
     setIsEditing(true);
     setEditingProduct(product);
@@ -276,9 +329,11 @@ function Admin() {
     return acc;
   }, {});
 
-  const filteredOrders = orders.filter((order) => (
-    orderStatusFilter === 'all' ? true : order.status === orderStatusFilter
-  ));
+  const filteredOrders = orders.filter((order) => {
+    const matchesStatus = orderStatusFilter === 'all' ? true : order.status === orderStatusFilter;
+    const matchesCustomer = customerFilter ? (order.userId?._id === customerFilter._id || order.customerDetails?.email === customerFilter.email) : true;
+    return matchesStatus && matchesCustomer;
+  });
 
   const totalOrders = orders.length;
   const totalRevenue = Number(stats.revenue || 0);
@@ -556,6 +611,20 @@ function Admin() {
             <div className="orders-view animate-fade-in">
               <div className="admin-header">
                 <h1 className="editorial-title">Order Management</h1>
+                {customerFilter && (
+                  <div className="filter-pill-container animate-fade-in" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>
+                    <span className="pill pill-role" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--secondary-light)', color: 'var(--primary-dark)', border: '1px solid var(--secondary)', width: 'fit-content' }}>
+                      Viewing orders for {customerFilter.name}
+                      <button 
+                        type="button" 
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', padding: '0 0.2rem', display: 'flex', alignItems: 'center' }}
+                        onClick={() => setCustomerFilter(null)}
+                      >
+                        <X size={14} />
+                      </button>
+                    </span>
+                  </div>
+                )}
                 <div className="admin-actions">
                   <select
                     className="admin-select"
@@ -602,11 +671,39 @@ function Admin() {
                             </div>
                           </td>
                           <td><span className="pill pill-role">{isCustom ? 'Custom' : 'Fixed'}</span></td>
-                          <td><span className={`pill pill-status ${statusClass}`}>{order.status || 'pending'}</span></td>
+                          <td>
+                            <select 
+                              className={`pill-status-select ${statusClass}`}
+                              value={order.status || 'pending'}
+                              onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="in progress">In Progress</option>
+                              <option value="ready">Ready</option>
+                              <option value="shipped">Shipped</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                          </td>
                           <td>Rs. {Number(order.totalAmount || 0)}</td>
                           <td>
                             <div className="order-meta">
-                              <span>{order.paymentStatus || 'pending'} payment</span>
+                              <select 
+                                className="payment-status-select"
+                                value={order.paymentStatus || 'pending'}
+                                onChange={(e) => handleUpdatePaymentStatus(order._id, e.target.value)}
+                                style={{
+                                  fontSize: '0.75rem',
+                                  padding: '2px 4px',
+                                  borderRadius: '4px',
+                                  border: '1px solid #ddd',
+                                  marginBottom: '4px',
+                                  display: 'block'
+                                }}
+                              >
+                                <option value="pending">pending payment</option>
+                                <option value="completed">completed payment</option>
+                              </select>
                               <span>{order.customerDetails?.address || 'Address pending'}</span>
                               {order.customerDetails?.upiId && (
                                 <span style={{ color: 'var(--primary-dark)', fontWeight: 'bold' }}>UPI: {order.customerDetails.upiId}</span>
@@ -896,7 +993,7 @@ function Admin() {
                         <td>{customer.email}</td>
                         <td><span className="pill pill-role">{customer.role}</span></td>
                         <td><span className="pill pill-status active">Active</span></td>
-                        <td><button className="btn-link" type="button">View Orders</button></td>
+                        <td><button className="btn-link" type="button" onClick={() => handleViewUserOrders(customer)}>View Orders</button></td>
                       </tr>
                     )) : (
                       <tr>

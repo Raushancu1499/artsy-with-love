@@ -145,9 +145,54 @@
   animation: blobDrift 13s ease-in-out infinite alternate-reverse;
 }
 
+.lp-blob-3 {
+  width: 180px;
+  height: 180px;
+  background: rgba(192, 132, 252, 0.12);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: blobDrift 8s ease-in-out infinite alternate;
+}
+
 @keyframes blobDrift {
   from { transform: translate(0, 0) scale(1); }
   to   { transform: translate(20px, 15px) scale(1.05); }
+}
+
+/* ── Floating Particles ── */
+.lp-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.lp-particle {
+  position: absolute;
+  font-size: 1.4rem;
+  opacity: 0;
+  animation: particleRise 8s ease-in infinite;
+  user-select: none;
+}
+
+.lp-particle-1  { left: 8%;  animation-delay: 0s;    animation-duration: 9s; }
+.lp-particle-2  { left: 18%; animation-delay: 1.2s;  animation-duration: 7s; }
+.lp-particle-3  { left: 30%; animation-delay: 2.4s;  animation-duration: 10s; }
+.lp-particle-4  { left: 42%; animation-delay: 0.6s;  animation-duration: 8s; }
+.lp-particle-5  { left: 55%; animation-delay: 3.2s;  animation-duration: 6s; }
+.lp-particle-6  { left: 65%; animation-delay: 1.8s;  animation-duration: 11s; }
+.lp-particle-7  { left: 75%; animation-delay: 4s;    animation-duration: 7.5s; }
+.lp-particle-8  { left: 85%; animation-delay: 0.9s;  animation-duration: 9.5s; }
+.lp-particle-9  { left: 22%; animation-delay: 5s;    animation-duration: 8.5s; }
+.lp-particle-10 { left: 92%; animation-delay: 2s;    animation-duration: 10s; }
+
+@keyframes particleRise {
+  0%   { transform: translateY(100vh) rotate(0deg);   opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
 }
 
 /* Form wrap */

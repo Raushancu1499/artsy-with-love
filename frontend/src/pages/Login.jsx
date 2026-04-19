@@ -5,6 +5,8 @@ import API_BASE_URL from '../config/api';
 import './Login.css';
 import { Eye, EyeOff, Heart, ArrowRight, Loader, Sparkles, Star } from 'lucide-react';
 
+const PARTICLES = ['🧸','🌸','🎀','✨','🌷','💝','🧶','🎁','🌼','💌'];
+
 function Login() {
   const [isRegister, setIsRegister] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
@@ -88,9 +90,17 @@ function Login() {
 
       {/* ── RIGHT PANEL: Form ── */}
       <div className="lp-form-panel">
-        {/* Subtle floating blobs */}
+        {/* Animated orbs */}
         <div className="lp-blob lp-blob-1" />
         <div className="lp-blob lp-blob-2" />
+        <div className="lp-blob lp-blob-3" />
+
+        {/* Floating emoji particles */}
+        <div className="lp-particles" aria-hidden="true">
+          {PARTICLES.map((emoji, i) => (
+            <span key={i} className={`lp-particle lp-particle-${i + 1}`}>{emoji}</span>
+          ))}
+        </div>
 
         <div className="lp-form-wrap" key={isRegister ? 'reg' : 'log'}>
           {/* Header */}

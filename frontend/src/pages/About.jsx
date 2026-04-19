@@ -122,9 +122,15 @@ function About() {
 
       {/* ── FLOATING EMOJI STRIP ── */}
       <div className="about-emoji-strip" aria-hidden="true">
-        {['🧸', '🌸', '🎀', '✨', '🌷', '💝', '🧶', '🎁', '🌼', '💌', '🧸', '🌸', '🎀', '✨'].map((e, i) => (
-          <span key={i} className="strip-emoji" style={{ animationDelay: `${i * 0.4}s` }}>{e}</span>
-        ))}
+        <div className="strip-inner">
+          {['🧸', '🌸', '🎀', '✨', '🌷', '💝', '🧶', '🎁', '🌼', '💌', '🧸', '🌸', '🎀', '✨', '🌷', '💝', '🧶', '🎁', '🌼', '💌'].map((e, i) => (
+            <span key={i} className="strip-emoji">{e}</span>
+          ))}
+          {/* duplicate for seamless loop */}
+          {['🧸', '🌸', '🎀', '✨', '🌷', '💝', '🧶', '🎁', '🌼', '💌', '🧸', '🌸', '🎀', '✨', '🌷', '💝', '🧶', '🎁', '🌼', '💌'].map((e, i) => (
+            <span key={`d-${i}`} className="strip-emoji">{e}</span>
+          ))}
+        </div>
       </div>
 
       {/* ── PROMISE BANNER ── */}

@@ -221,19 +221,27 @@ function Cart() {
         name: 'Artsy With Love',
         description: 'Handmade crochet gift order',
         order_id: orderData.id,
-        method: {
-          upi: true,
-          card: false,
-          netbanking: false,
-          wallet: false,
-          paylater: false,
-          emi: false,
-          bank_transfer: false
+        config: {
+          display: {
+            blocks: {
+              upi: {
+                name: 'Pay using UPI',
+                instruments: [{ method: 'upi' }]
+              },
+              others: {
+                name: 'Cards / Netbanking',
+                instruments: [{ method: 'card' }, { method: 'netbanking' }]
+              }
+            },
+            sequence: ['block.upi', 'block.others'],
+            preferences: { show_default_blocks: true }
+          }
         },
         prefill: {
           name: checkoutForm.fullName,
           email: checkoutForm.email,
           contact: checkoutForm.primaryPhone,
+          method: 'upi'
         },
         notes: {
           address: checkoutForm.fullAddress,
@@ -416,44 +424,8 @@ function Cart() {
                 disabled={isProcessing}
               >
                 {isProcessing ? <Loader className="animate-spin" /> : <CreditCard size={18} />}
-                Pay Securely (Razorpay)
+                Proceed to Payment
               </button>
-
-              <div className="upi-direct-options">
-                <a
-                  href={`upi://pay?pa=${DESTINATION_UPI_ID}&pn=Artsy%20With%20Love&am=${total}&cu=INR&tn=ArtsyOrder`}
-                  className="btn btn-outline w-100 upi-app-btn"
-                >
-                  Open in UPI App
-                </a>
-                <button
-                  type="button"
-                  className="btn btn-link w-100 mt-2"
-                  onClick={() => setShowQR(!showQR)}
-                >
-                  {showQR ? 'Hide QR Code' : 'Show Payment QR Code'}
-                </button>
-              </div>
-
-              {showQR && (
-                <div className="qr-container animate-fade-in">
-                  <p className="qr-hint">Scan with GPay, PhonePe, or Paytm</p>
-                  <img
-                    src={`${QR_API}${encodeURIComponent(`upi://pay?pa=${DESTINATION_UPI_ID}&pn=Artsy%20With%20Love&am=${total}&cu=INR&tn=ArtsyOrder`)}`}
-                    alt="Payment QR Code"
-                    className="qr-image"
-                  />
-                  <p className="qr-total">Total: {CURRENCY}{total}</p>
-                  <button
-                    type="button"
-                    className="btn btn-secondary w-100 mt-3"
-                    onClick={submitManualOrder}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? <Loader className="animate-spin" /> : 'I Have Paid - Submit Order'}
-                  </button>
-                </div>
-              )}
 
               <button
                 type="button"
@@ -464,7 +436,7 @@ function Cart() {
                 Order on WhatsApp
               </button>
 
-              <p className="secure-checkout-msg">All payments are processed securely. Manual payments are verified within 24 hours.</p>
+              <p className="secure-checkout-msg">Complete your payment securely via Razorpay (UPI, Cards, Netbanking).</p>
             </div>
           </div>
         ) : (

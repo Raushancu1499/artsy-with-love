@@ -306,109 +306,97 @@ function Cart() {
         {cartItems.length > 0 ? (
           <div className="cart-container">
             <div className="cart-items">
+              <div className="cart-items-header">
+                <span>Product</span>
+                <span>Qty</span>
+                <span>Price</span>
+              </div>
               {cartItems.map(item => (
                 <div key={item._id} className="cart-item">
                   <div className="item-img">
                     <img src={item.image || item.images?.[0] || 'https://via.placeholder.com/300x300?text=Handmade+Gift'} alt={item.name} />
                   </div>
                   <div className="item-details">
+                    <div className="item-meta-top">
+                      <span className="item-category-tag">{item.category || 'Handmade'}</span>
+                    </div>
                     <h3>{item.name}</h3>
-                    <p className="item-price">{CURRENCY}{item.price}</p>
                     {item.giftMessage ? (
-                      <p className="item-note">Gift note: {item.giftMessage}</p>
+                      <p className="item-note">💌 {item.giftMessage}</p>
                     ) : null}
                     <div className="item-actions">
                       <div className="qty-controls">
-                        <button type="button" onClick={() => updateQuantity(item._id, item.quantity - 1)}>-</button>
+                        <button type="button" onClick={() => updateQuantity(item._id, item.quantity - 1)}>−</button>
                         <span>{item.quantity}</span>
                         <button type="button" onClick={() => updateQuantity(item._id, item.quantity + 1)}>+</button>
                       </div>
-                      <button type="button" className="remove-btn" onClick={() => removeFromCart(item._id)}>
-                        <Trash2 size={18} />
+                      <button type="button" className="remove-btn" onClick={() => removeFromCart(item._id)} title="Remove item">
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
+                  <div className="item-price-col">
+                    <span className="item-price">{CURRENCY}{(item.price * item.quantity).toLocaleString()}</span>
+                    {item.quantity > 1 && <span className="item-unit-price">{CURRENCY}{item.price} each</span>}
+                  </div>
                 </div>
               ))}
+              <div className="cart-continue">
+                <Link to="/products" className="continue-shopping-link">
+                  ← Continue Shopping
+                </Link>
+              </div>
             </div>
 
             <div className="cart-summary">
-              <h3>Order Summary</h3>
-              <div className="summary-row">
-                <span>Subtotal</span>
-                <span>{CURRENCY}{subtotal}</span>
+              <div className="summary-header">
+                <h3>Order Summary</h3>
+                <span className="summary-item-count">{cartItems.reduce((a,b)=>a+b.quantity,0)} item{cartItems.reduce((a,b)=>a+b.quantity,0)!==1?'s':''}</span>
               </div>
-              <div className="summary-row">
-                <span>Shipping</span>
-                <span>{CURRENCY}{shipping}</span>
-              </div>
-              <div className="summary-row total">
-                <span>Total</span>
-                <span>{CURRENCY}{total}</span>
+
+              <div className="summary-rows">
+                <div className="summary-row">
+                  <span>Subtotal</span>
+                  <span>{CURRENCY}{subtotal.toLocaleString()}</span>
+                </div>
+                <div className="summary-row">
+                  <span>🚚 Shipping</span>
+                  <span className="shipping-free">{CURRENCY}{shipping}</span>
+                </div>
+                <div className="summary-row total">
+                  <span>Total</span>
+                  <span>{CURRENCY}{total.toLocaleString()}</span>
+                </div>
               </div>
 
               <div className="checkout-card">
-                <h4>Delivery Details</h4>
+                <h4>📦 Delivery Details</h4>
                 <div className="checkout-form">
                   <div className="form-group">
                     <label htmlFor="fullName">Full Name</label>
-                    <input
-                      id="fullName"
-                      type="text"
-                      value={checkoutForm.fullName}
-                      onChange={(e) => setField('fullName', e.target.value)}
-                      placeholder="Enter your full name"
-                    />
+                    <input id="fullName" type="text" value={checkoutForm.fullName} onChange={(e) => setField('fullName', e.target.value)} placeholder="Enter your full name" />
                   </div>
                   <div className="form-group">
                     <label htmlFor="email">Email Address</label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={checkoutForm.email}
-                      onChange={(e) => setField('email', e.target.value)}
-                      placeholder="Enter your email"
-                    />
+                    <input id="email" type="email" value={checkoutForm.email} onChange={(e) => setField('email', e.target.value)} placeholder="Where should we send the confirmation?" />
+                  </div>
+                  <div className="form-row-split">
+                    <div className="form-group">
+                      <label htmlFor="primaryPhone">Primary Phone</label>
+                      <input id="primaryPhone" type="tel" value={checkoutForm.primaryPhone} onChange={(e) => setField('primaryPhone', e.target.value)} placeholder="Delivery number" />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="secondaryPhone">Secondary Phone</label>
+                      <input id="secondaryPhone" type="tel" value={checkoutForm.secondaryPhone} onChange={(e) => setField('secondaryPhone', e.target.value)} placeholder="Alternate number" />
+                    </div>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="primaryPhone">Primary Phone Number</label>
-                    <input
-                      id="primaryPhone"
-                      type="tel"
-                      value={checkoutForm.primaryPhone}
-                      onChange={(e) => setField('primaryPhone', e.target.value)}
-                      placeholder="Delivery contact number"
-                    />
+                    <label htmlFor="fullAddress">Delivery Address</label>
+                    <textarea id="fullAddress" rows="3" value={checkoutForm.fullAddress} onChange={(e) => setField('fullAddress', e.target.value)} placeholder="House number, street, area, city, state, pincode" />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="secondaryPhone">Secondary Phone Number</label>
-                    <input
-                      id="secondaryPhone"
-                      type="tel"
-                      value={checkoutForm.secondaryPhone}
-                      onChange={(e) => setField('secondaryPhone', e.target.value)}
-                      placeholder="Alternate contact number"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="fullAddress">Full Delivery Address</label>
-                    <textarea
-                      id="fullAddress"
-                      rows="4"
-                      value={checkoutForm.fullAddress}
-                      onChange={(e) => setField('fullAddress', e.target.value)}
-                      placeholder="House number, street, area, city, state, pincode"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="upiId">UPI ID (Optional)</label>
-                    <input
-                      id="upiId"
-                      type="text"
-                      value={checkoutForm.upiId}
-                      onChange={(e) => setField('upiId', e.target.value)}
-                      placeholder="e.g. username@bankname"
-                    />
+                    <label htmlFor="upiId">UPI ID <span style={{fontWeight:400,color:'var(--text-light)',fontSize:'0.85rem'}}>(Optional)</span></label>
+                    <input id="upiId" type="text" value={checkoutForm.upiId} onChange={(e) => setField('upiId', e.target.value)} placeholder="username@bankname" />
                   </div>
                 </div>
               </div>
@@ -419,70 +407,50 @@ function Cart() {
                 </div>
               )}
 
-              <button
-                type="button"
-                className="btn btn-primary w-100 checkout-btn"
-                onClick={handleCheckout}
-                disabled={isProcessing}
-              >
-                {isProcessing ? <Loader className="animate-spin" /> : <CreditCard size={18} />}
-                Pay with Cards/Netbanking (Razorpay)
-              </button>
+              <div className="checkout-actions">
+                <button type="button" className="btn btn-primary w-100 checkout-btn" onClick={handleCheckout} disabled={isProcessing}>
+                  {isProcessing ? <Loader className="animate-spin" /> : <CreditCard size={18} />}
+                  Pay via Razorpay
+                </button>
 
-              <div className="upi-direct-options">
-                <p className="selection-divider"><span>OR PAY DIRECTLY VIA UPI</span></p>
-                <a
-                  href={`upi://pay?pa=${DESTINATION_UPI_ID}&pn=Artsy%20With%20Love&am=${total}&cu=INR&tn=ArtsyOrder`}
-                  className="btn btn-outline w-100 upi-app-btn"
-                >
-                  Open in UPI App (GPay/PhonePe)
-                </a>
-                <button
-                  type="button"
-                  className="btn btn-link w-100 mt-2"
-                  onClick={() => setShowQR(!showQR)}
-                >
-                  {showQR ? 'Hide QR Code' : 'Show Payment QR Code (Scanner)'}
+                <div className="upi-direct-options">
+                  <p className="selection-divider"><span>OR</span></p>
+                  <a href={`upi://pay?pa=${DESTINATION_UPI_ID}&pn=Artsy%20With%20Love&am=${total}&cu=INR&tn=ArtsyOrder`} className="btn btn-outline w-100 upi-app-btn">
+                    📱 Open UPI App (GPay / PhonePe)
+                  </a>
+                  <button type="button" className="btn btn-link w-100 mt-2 qr-toggle-btn" onClick={() => setShowQR(!showQR)}>
+                    {showQR ? '▲ Hide QR Code' : '📷 Show Payment QR Code'}
+                  </button>
+                </div>
+
+                {showQR && (
+                  <div className="qr-container animate-fade-in">
+                    <p className="qr-hint">Scan with GPay, PhonePe, or Paytm</p>
+                    <img src={`${QR_API}${encodeURIComponent(`upi://pay?pa=${DESTINATION_UPI_ID}&pn=Artsy%20With%20Love&am=${total}&cu=INR&tn=ArtsyOrder`)}`} alt="Payment QR Code" className="qr-image" />
+                    <p className="qr-total">Total: {CURRENCY}{total}</p>
+                    <button type="button" className="btn btn-secondary w-100 mt-3" onClick={submitManualOrder} disabled={isProcessing}>
+                      {isProcessing ? <Loader className="animate-spin" /> : '✅ I Have Paid — Submit Order'}
+                    </button>
+                  </div>
+                )}
+
+                <button type="button" className="btn btn-secondary w-100 whatsapp-checkout-btn" onClick={openWhatsAppOrder}>
+                  <MessageCircle size={18} />
+                  Order on WhatsApp
                 </button>
               </div>
 
-              {showQR && (
-                <div className="qr-container animate-fade-in">
-                  <p className="qr-hint">Scan with GPay, PhonePe, or Paytm</p>
-                  <img
-                    src={`${QR_API}${encodeURIComponent(`upi://pay?pa=${DESTINATION_UPI_ID}&pn=Artsy%20With%20Love&am=${total}&cu=INR&tn=ArtsyOrder`)}`}
-                    alt="Payment QR Code"
-                    className="qr-image"
-                  />
-                  <p className="qr-total">Total: {CURRENCY}{total}</p>
-                  <button
-                    type="button"
-                    className="btn btn-secondary w-100 mt-3"
-                    onClick={submitManualOrder}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? <Loader className="animate-spin" /> : 'I Have Paid - Submit Order'}
-                  </button>
-                </div>
-              )}
-
-              <button
-                type="button"
-                className="btn btn-secondary w-100 whatsapp-checkout-btn"
-                onClick={openWhatsAppOrder}
-              >
-                <MessageCircle size={18} />
-                Order on WhatsApp
-              </button>
-
-              <p className="secure-checkout-msg">Complete your payment securely via Razorpay (UPI, Cards, Netbanking).</p>
+              <p className="secure-checkout-msg">🔒 Payments processed securely via Razorpay</p>
             </div>
           </div>
         ) : (
-          <div className="empty-cart text-center">
-            <ShoppingBag size={48} className="empty-cart-icon" />
-            <p>Your cart is looking a little empty.</p>
-            <Link to="/products" className="btn btn-primary mt-4">Start Shopping</Link>
+          <div className="empty-cart">
+            <div className="empty-cart-inner">
+              <ShoppingBag size={64} className="empty-cart-icon" />
+              <h2>Your cart is empty</h2>
+              <p>Discover our handmade crochet collection and find something beautiful.</p>
+              <Link to="/products" className="btn btn-primary mt-4">Browse the Collection →</Link>
+            </div>
           </div>
         )}
       </div>

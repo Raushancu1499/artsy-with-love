@@ -38,6 +38,8 @@ function Catalog() {
   return (
     <div className="catalog-page">
       <section className="catalog-header">
+        <img src="/assets/images/catalog_banner.png" className="catalog-header-bg" alt="" />
+        <div className="catalog-header-overlay" />
         <div className="container">
           <p className="catalog-eyebrow"><Sparkles size={15} /> Our Collection</p>
           <h1 className="page-title">Handcrafted Treasures</h1>

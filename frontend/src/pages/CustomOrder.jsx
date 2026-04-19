@@ -145,17 +145,59 @@ function CustomOrder() {
               <textarea id="address" name="address" rows="3" value={formData.address} onChange={handleChange} placeholder="House number, street, area, city, state, pincode" required />
             </div>
             <div className="form-group">
-              <label htmlFor="productType">Type of Product</label>
-              <select id="productType" name="productType" value={formData.productType} onChange={handleChange}>
-                <option value="soft_toy">Soft Toy / Amigurumi</option>
-                <option value="flower">Crochet Flowers</option>
-                <option value="keychain">Keychain</option>
-                <option value="other">Other</option>
-              </select>
+              <label>Type of Product</label>
+              <div className="product-type-grid">
+                {[
+                  { value: 'soft_toy', emoji: '🧸', label: 'Soft Toy', desc: 'Amigurumi & characters' },
+                  { value: 'flower',   emoji: '🌸', label: 'Flowers',  desc: 'Crochet bouquets' },
+                  { value: 'keychain', emoji: '🔑', label: 'Keychain', desc: 'Mini cute charms' },
+                  { value: 'other',    emoji: '✨', label: 'Other',    desc: 'Tell us your idea' },
+                ].map(({ value, emoji, label, desc }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={`product-type-card ${formData.productType === value ? 'selected' : ''}`}
+                    onClick={() => setFormData(prev => ({ ...prev, productType: value }))}
+                  >
+                    <span className="product-type-emoji">{emoji}</span>
+                    <span className="product-type-name">{label}</span>
+                    <span className="product-type-desc">{desc}</span>
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="form-group">
               <label htmlFor="date">Desired Delivery Date <span className="text-light">(approximate)</span></label>
-              <input id="date" name="date" type="date" value={formData.date} onChange={handleChange} />
+              <div className="date-chips">
+                {[
+                  { label: '⚡ ASAP',       days: 7  },
+                  { label: '📅 2 Weeks',    days: 14 },
+                  { label: '🗓️ 1 Month',   days: 30 },
+                  { label: '🎁 Custom',     days: null },
+                ].map(({ label, days }) => {
+                  const chipDate = days
+                    ? new Date(Date.now() + days * 86400000).toISOString().split('T')[0]
+                    : '';
+                  const isActive = days ? formData.date === chipDate : (!formData.date || ![7,14,30].map(d => new Date(Date.now() + d*86400000).toISOString().split('T')[0]).includes(formData.date));
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      className={`date-chip ${isActive && (days || !formData.date) ? 'active' : ''}`}
+                      onClick={() => setFormData(prev => ({ ...prev, date: chipDate }))}
+                    >{label}</button>
+                  );
+                })}
+              </div>
+              <input
+                id="date"
+                name="date"
+                type="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="date-input-styled"
+                min={new Date().toISOString().split('T')[0]}
+              />
             </div>
             <div className="form-group">
               <label htmlFor="description">Describe Your Idea in Detail</label>

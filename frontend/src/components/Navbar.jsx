@@ -49,7 +49,23 @@ const Navbar = () => {
   const firstName = user?.name?.split(' ')[0] || 'Account';
 
   return (
-    <nav className="navbar glass-nav">
+    <>
+      {/* Admin Management Banner – sits above the sticky navbar in normal flow */}
+      {isAdmin && (
+        <div className="admin-management-banner">
+          <div className="container banner-flex">
+            <div className="banner-status">
+              <UserCheck size={14} />
+              <span>Management Mode Active</span>
+            </div>
+            <div className="banner-links">
+              <Link to="/admin" onClick={closeMenus}>Go to Dashboard →</Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <nav className="navbar glass-nav">
       <div className="container navbar-container">
           <button 
             type="button" 
@@ -108,7 +124,10 @@ const Navbar = () => {
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   >
                     <User size={22} />
-                    <span className="user-label">{firstName}</span>
+                    <span className="user-label">
+                      {firstName}
+                      {isAdmin && <span className="admin-indicator">ADMIN</span>}
+                    </span>
                   </button>
                   
                   {isUserMenuOpen && (
@@ -148,6 +167,7 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
+    </>
   );
 };
 

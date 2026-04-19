@@ -322,3 +322,63 @@
 [data-theme='dark'] .login-text {
   color: var(--text-dark);
 }
+
+/* ================================================ */
+/* === ADMIN MANAGEMENT BANNER                   === */
+/* ================================================ */
+
+.admin-management-banner {
+  background: #111;
+  color: #fbbf24;
+  padding: 0.5rem 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(251, 191, 36, 0.25);
+  /* Normal document flow – not sticky/fixed, so it cannot block clicks */
+}
+
+.banner-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.banner-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.banner-links a {
+  color: #fbbf24;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  border-radius: 100px;
+  transition: all 0.25s ease;
+}
+
+.banner-links a:hover {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: #fbbf24;
+}
+
+/* Admin indicator pill next to user name in Navbar */
+.admin-indicator {
+  display: inline-block;
+  background: #fbbf24;
+  color: #000;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+  line-height: 1.5;
+}
+

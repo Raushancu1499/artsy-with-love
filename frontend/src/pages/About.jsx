@@ -1,42 +1,142 @@
-import { Heart, Sparkles, Star } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Heart, Star, Sparkles, Package, Clock } from 'lucide-react';
+import './About.css';
 
 function About() {
+  const elementsRef = useRef([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    elementsRef.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const addRef = (el) => {
+    if (el && !elementsRef.current.includes(el)) elementsRef.current.push(el);
+  };
+
   return (
-    <div className="container" style={{ padding: '4rem 0' }}>
-      <section className="premium-card" style={{ padding: '3.5rem', textAlign: 'center', marginBottom: '2rem' }}>
-        <p className="text-accent" style={{ fontSize: '1.2rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 'bold' }}>
-          <Sparkles size={18} /> Our Story
-        </p>
-        <h1 className="page-title" style={{ fontSize: '2.8rem', lineHeight: '1.2', marginBottom: '1.5rem' }}>
-          Crafting Memories, One Stitch at a Time
-        </h1>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <p style={{ marginTop: '1.5rem', fontSize: '1.2rem', color: 'var(--text-color)', lineHeight: '1.8' }}>
-            Artsy With Love began with a simple, profound idea: <strong>gifts should feel thoughtful, not transactional</strong>. In a world of mass-produced goods, we longed for the warmth and personal touch that only handmade creations can bring.
+    <div className="about-page">
+
+      {/* ── HERO SECTION ── */}
+      <section className="about-hero">
+        <div className="about-hero-bg">
+          <img src="/about_hero.png" alt="Handmade crochet gifts" className="about-hero-img" />
+          <div className="about-hero-overlay" />
+        </div>
+        <div className="about-hero-content" ref={addRef}>
+          <p className="about-eyebrow">
+            <Sparkles size={16} /> Our Story
           </p>
-          <p style={{ marginTop: '1.5rem', color: 'var(--text-light)', lineHeight: '1.8', fontSize: '1.1rem' }}>
-            We design and painstakingly craft bespoke crochet pieces that are meant to be cherished forever. From the softest yarn to the final intricate knot, every detail is considered. Whether it's a ready-to-buy soft toy to comfort a child or a fully custom keepsake capturing a unique memory, our creations carry a piece of our heart.
+          <h1 className="about-title">
+            Crafting Memories,<br />
+            <span className="about-title-accent">One Stitch at a Time</span>
+          </h1>
+          <p className="about-subtitle">
+            Where every knot holds a feeling, and every gift tells a story.
           </p>
+          <div className="about-hero-orbs">
+            <div className="orb orb-1" />
+            <div className="orb orb-2" />
+            <div className="orb orb-3" />
+          </div>
         </div>
       </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-        <div className="premium-card" style={{ padding: '2.5rem', textAlign: 'center' }}>
-          <div style={{ width: '60px', height: '60px', background: 'var(--accent-pink)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'white', opacity: '0.9' }}>
-            <Heart size={30} fill="currentColor" />
+      {/* ── INTRO TEXT SECTION ── */}
+      <section className="about-intro container" ref={addRef}>
+        <div className="about-intro-text reveal-up">
+          <h2>A Brand Born from <span className="text-accent">Heart</span></h2>
+          <p>
+            Artsy With Love began with a simple, profound belief: <strong>gifts should feel thoughtful, not transactional.</strong> In a world of mass-produced goods, we longed for the warmth and personal touch that only handmade creations can bring.
+          </p>
+          <p>
+            We design and painstakingly craft bespoke crochet pieces meant to be cherished forever. From the softest yarn to the final intricate knot, every single detail is considered. Whether it's a ready-to-buy soft toy for a child or a fully custom keepsake capturing a precious memory — our creations carry a piece of our heart.
+          </p>
+        </div>
+        <div className="about-intro-stats reveal-up">
+          <div className="stat-card">
+            <span className="stat-number">100%</span>
+            <span className="stat-label">Handcrafted</span>
           </div>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Crafted with Love</h3>
-          <p style={{ color: 'var(--text-light)', lineHeight: '1.6' }}>Every piece is hand-crocheted over hours of dedicated work, ensuring unparalleled quality and a distinct character you won't find on a factory line.</p>
+          <div className="stat-card">
+            <span className="stat-number">❤️</span>
+            <span className="stat-label">Made with Love</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-number">∞</span>
+            <span className="stat-label">Custom Designs</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURE CARDS ── */}
+      <section className="about-features container">
+        <div className="about-feature-card reveal-up" ref={addRef}>
+          <div className="feature-img-wrap">
+            <img src="/about_crafted.png" alt="Hands crocheting soft toy" />
+            <div className="feature-img-badge">
+              <Heart size={20} fill="currentColor" /> Crafted with Love
+            </div>
+          </div>
+          <div className="feature-content">
+            <h3>Hours of Dedicated Craft</h3>
+            <p>Every piece is hand-crocheted over hours of careful, dedicated work. No shortcuts, no machines — just skilled hands, premium yarn, and a whole lot of patience to create something truly one-of-a-kind.</p>
+            <ul className="feature-list">
+              <li><Clock size={14} /> Hours per piece, not minutes</li>
+              <li><Star size={14} /> Unique character, every time</li>
+              <li><Package size={14} /> Gift-ready packaging included</li>
+            </ul>
+          </div>
         </div>
 
-        <div className="premium-card" style={{ padding: '2.5rem', textAlign: 'center' }}>
-          <div style={{ width: '60px', height: '60px', background: 'var(--accent-pink)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', color: 'white', opacity: '0.9' }}>
-            <Star size={30} fill="currentColor" />
+        <div className="about-feature-card about-feature-card--reverse reveal-up" ref={addRef}>
+          <div className="feature-img-wrap">
+            <img src="/about_quality.png" alt="Premium colorful yarn balls" />
+            <div className="feature-img-badge">
+              <Star size={20} fill="currentColor" /> Premium Quality
+            </div>
           </div>
-          <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Premium Quality</h3>
-          <p style={{ color: 'var(--text-light)', lineHeight: '1.6' }}>We exclusively use high-grade, sustainable yarns that are incredibly soft to the touch, hypoallergenic, and designed to stand the test of time.</p>
+          <div className="feature-content">
+            <h3>Only the Finest Materials</h3>
+            <p>We exclusively source high-grade, sustainable yarns that are incredibly soft, hypoallergenic, and designed to last a lifetime. Because the people you gift deserve nothing but the best.</p>
+            <ul className="feature-list">
+              <li><Heart size={14} /> Hypoallergenic &amp; baby-safe</li>
+              <li><Star size={14} /> Sustainably sourced yarns</li>
+              <li><Sparkles size={14} /> Vibrant, fade-resistant colors</li>
+            </ul>
+          </div>
         </div>
+      </section>
+
+      {/* ── FLOATING EMOJI STRIP ── */}
+      <div className="about-emoji-strip" aria-hidden="true">
+        {['🧸', '🌸', '🎀', '✨', '🌷', '💝', '🧶', '🎁', '🌼', '💌', '🧸', '🌸', '🎀', '✨'].map((e, i) => (
+          <span key={i} className="strip-emoji" style={{ animationDelay: `${i * 0.4}s` }}>{e}</span>
+        ))}
       </div>
+
+      {/* ── PROMISE BANNER ── */}
+      <section className="about-promise container" ref={addRef}>
+        <div className="about-promise-card reveal-up">
+          <Sparkles size={40} className="promise-icon" />
+          <h2>Our Promise to You</h2>
+          <p>Every Artsy With Love creation arrives with a simple guarantee: if it doesn't make you smile, we'll make it right. Your happiness is stitched into every piece we create.</p>
+          <a href="/products" className="btn btn-primary about-cta-btn">Shop the Collection →</a>
+        </div>
+      </section>
+
     </div>
   );
 }

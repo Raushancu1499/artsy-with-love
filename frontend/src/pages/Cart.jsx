@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { Trash2, ShoppingBag, Loader, MessageCircle, CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import API_BASE_URL from '../config/api';
+import API_BASE_URL, { DESTINATION_UPI_ID } from '../config/api';
 import './Cart.css';
+
+const QR_API = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=';
 
 const CURRENCY = '\u20B9';
 const WHATSAPP_NUMBER = (import.meta.env.VITE_WHATSAPP_NUMBER || '919876543210').replace(/\D/g, '');
@@ -22,6 +24,7 @@ function Cart() {
     fullAddress: '',
     upiId: '',
   });
+  const [showQR, setShowQR] = useState(false);
 
   const subtotal = getSubtotal();
   const shipping = subtotal > 0 ? 50 : 0;
@@ -116,6 +119,58 @@ function Cart() {
     }
   };
 
+  const submitManualOrder = async () => {
+    if (!cartItems.length) return;
+    if (!checkoutForm.fullName || !checkoutForm.email || !checkoutForm.primaryPhone || !checkoutForm.fullAddress) {
+      setNotice({ type: 'error', text: 'Please fill in all required delivery details before submitting.' });
+      return;
+    }
+
+    setIsProcessing(true);
+    setNotice({ type: 'info', text: 'Submitting your manual order...' });
+
+    try {
+      const orderPayload = {
+        customerDetails: {
+          name: checkoutForm.fullName,
+          email: checkoutForm.email,
+          phone: checkoutForm.primaryPhone,
+          secondaryPhone: checkoutForm.secondaryPhone,
+          address: checkoutForm.fullAddress,
+          upiId: checkoutForm.upiId,
+        },
+        items: cartItems.map((item) => ({
+          productId: item._id,
+          quantity: item.quantity,
+          customizationDetails: item.giftMessage || '',
+        })),
+        userId: user?.id,
+        totalAmount: total,
+        status: 'pending',
+        paymentStatus: 'pending', // Pending verification for manual
+        paymentDetails: {
+          method: 'upi_manual',
+        },
+      };
+
+      const orderRes = await fetch(`${API_BASE_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (!orderRes.ok) throw new Error('Could not save order.');
+
+      clearCart();
+      setShowQR(false);
+      setNotice({ type: 'success', text: 'Order submitted! We will verify your payment soon.' });
+    } catch (error) {
+      setNotice({ type: 'error', text: 'Failed to submit order.' });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleCheckout = async () => {
     if (!cartItems.length) {
       setNotice({ type: 'error', text: 'Your cart is empty.' });
@@ -166,11 +221,17 @@ function Cart() {
         name: 'Artsy With Love',
         description: 'Handmade crochet gift order',
         order_id: orderData.id,
-        method: {
-          upi: true,
-          card: false,
-          netbanking: false,
-          wallet: false,
+        config: {
+          display: {
+            blocks: {
+              banks: {
+                name: 'Pay via UPI',
+                instruments: [{ method: 'upi' }]
+              }
+            },
+            sequence: ['block.banks'],
+            preferences: { show_default_blocks: false }
+          }
         },
         prefill: {
           name: checkoutForm.fullName,
@@ -358,8 +419,44 @@ function Cart() {
                 disabled={isProcessing}
               >
                 {isProcessing ? <Loader className="animate-spin" /> : <CreditCard size={18} />}
-                Pay with UPI
+                Pay Securely (Razorpay)
               </button>
+
+              <div className="upi-direct-options">
+                <a
+                  href={`upi://pay?pa=${DESTINATION_UPI_ID}&pn=Artsy%20With%20Love&am=${total}&cu=INR&tn=ArtsyOrder`}
+                  className="btn btn-outline w-100 upi-app-btn"
+                >
+                  Open in UPI App
+                </a>
+                <button
+                  type="button"
+                  className="btn btn-link w-100 mt-2"
+                  onClick={() => setShowQR(!showQR)}
+                >
+                  {showQR ? 'Hide QR Code' : 'Show Payment QR Code'}
+                </button>
+              </div>
+
+              {showQR && (
+                <div className="qr-container animate-fade-in">
+                  <p className="qr-hint">Scan with GPay, PhonePe, or Paytm</p>
+                  <img
+                    src={`${QR_API}${encodeURIComponent(`upi://pay?pa=${DESTINATION_UPI_ID}&pn=Artsy%20With%20Love&am=${total}&cu=INR&tn=ArtsyOrder`)}`}
+                    alt="Payment QR Code"
+                    className="qr-image"
+                  />
+                  <p className="qr-total">Total: {CURRENCY}{total}</p>
+                  <button
+                    type="button"
+                    className="btn btn-secondary w-100 mt-3"
+                    onClick={submitManualOrder}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? <Loader className="animate-spin" /> : 'I Have Paid - Submit Order'}
+                  </button>
+                </div>
+              )}
 
               <button
                 type="button"
@@ -370,7 +467,7 @@ function Cart() {
                 Order on WhatsApp
               </button>
 
-              <p className="secure-checkout-msg">UPI checkout is handled securely through Razorpay.</p>
+              <p className="secure-checkout-msg">All payments are processed securely. Manual payments are verified within 24 hours.</p>
             </div>
           </div>
         ) : (

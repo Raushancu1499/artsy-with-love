@@ -1,5 +1,15 @@
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, Heart, User, LogOut, LayoutDashboard, X } from 'lucide-react';
+import { 
+  ShoppingBag, 
+  Search, 
+  Menu, 
+  X, 
+  User, 
+  LogOut, 
+  Heart,
+  Sun,
+  Moon
+} from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -12,7 +22,16 @@ function Navbar() {
   const [searchParams] = useSearchParams();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
 
   const handleSearch = (e) => {
     const q = e.target.value;
@@ -29,6 +48,7 @@ function Navbar() {
   const closeMenus = () => {
     setIsSearchOpen(false);
     setIsMobileMenuOpen(false);
+    setIsUserMenuOpen(false);
   };
 
   return (
@@ -104,17 +124,41 @@ function Navbar() {
 
           {isAuthenticated ? (
             <div className="user-nav-group">
-              <Link to={isAdmin ? '/admin' : '/my-orders'} className="icon-btn user-name" onClick={closeMenus}>
-                <User size={22} />
-                <span className="user-label">{firstName}</span>
-              </Link>
+              <div className="user-dropdown-container">
+                <button 
+                  type="button" 
+                  className={`icon-btn user-name ${isUserMenuOpen ? 'active' : ''}`}
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                >
+                  <User size={22} />
+                  <span className="user-label">{firstName}</span>
+                </button>
+                
+                {isUserMenuOpen && (
+                  <div className="user-dropdown-menu animate-fade-in">
+                    <Link to="/profile" onClick={closeMenus}>View Profile</Link>
+                    <Link to="/my-orders" onClick={closeMenus}>Order History</Link>
+                    {isAdmin && <Link to="/admin" onClick={closeMenus}>Admin Panel</Link>}
+                    <button type="button" onClick={logout} className="dropdown-logout-btn">
+                      <LogOut size={16} /> Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+              
               {!isAdmin && (
                 <Link to="/my-orders" className="icon-btn" title="My Orders" onClick={closeMenus}>
                   <ShoppingBag size={20} />
                 </Link>
               )}
-              <button type="button" onClick={logout} className="icon-btn logout-btn" aria-label="Logout">
-                <LogOut size={20} />
+              
+              <button 
+                type="button" 
+                className="icon-btn theme-toggle" 
+                onClick={toggleTheme}
+                title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+              >
+                {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />} 
               </button>
             </div>
           ) : (

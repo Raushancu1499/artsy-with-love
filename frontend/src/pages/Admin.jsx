@@ -43,6 +43,15 @@ function Admin() {
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [stats, setStats] = useState({ products: 0, orders: 0, users: 0, revenue: 0 });
+  const [statusMessage, setStatusMessage] = useState({ type: '', text: '' });
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(false);
   const [ordersLoading, setOrdersLoading] = useState(false);
@@ -1042,6 +1051,29 @@ function Admin() {
                         <span>Cloudinary Storage</span>
                         <span className="status-badge status-progress">Active</span>
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="form-section" style={{ marginTop: '2rem' }}>
+                    <h4>Appearance</h4>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '1rem' }}>Choose how the admin dashboard looks for you.</p>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <button 
+                        type="button" 
+                        className={`pill ${theme === 'light' ? 'pill-role' : ''}`} 
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: theme === 'light' ? 'var(--primary-light)' : 'transparent', color: theme === 'light' ? 'var(--primary-dark)' : 'var(--text-light)', border: '1px solid var(--border)' }}
+                        onClick={() => theme !== 'light' && toggleTheme()}
+                      >
+                        <Sun size={14} /> Light
+                      </button>
+                      <button 
+                        type="button" 
+                        className={`pill ${theme === 'dark' ? 'pill-role' : ''}`} 
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: theme === 'dark' ? 'var(--primary-light)' : 'transparent', color: theme === 'dark' ? 'var(--primary-dark)' : 'var(--text-light)', border: '1px solid var(--border)' }}
+                        onClick={() => theme !== 'dark' && toggleTheme()}
+                      >
+                        <Moon size={14} /> Dark
+                      </button>
                     </div>
                   </div>
 

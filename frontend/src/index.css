@@ -33,10 +33,25 @@
   --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
+[data-theme='dark'] {
+  --background: #1a1614;
+  --card-bg: #241f1d;
+  --text-dark: #fdfaf5;
+  --text-light: #a39288;
+  --white: #1a1614;
+  --border: rgba(255, 255, 255, 0.1);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 24px rgba(0,0,0,0.5);
+  --primary-light: #5a3d3d;
+  --secondary-light: #3d3b2a;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 body {

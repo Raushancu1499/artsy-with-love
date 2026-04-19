@@ -10,6 +10,7 @@ import CustomOrder from './pages/CustomOrder';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
 import MyOrders from './pages/MyOrders';
+import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import { CartProvider } from './context/CartContext';
@@ -17,6 +18,12 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+  useEffect(() => {
+    // Initialize theme from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }, []);
+
   return (
     <AuthProvider>
       <CartProvider>
@@ -38,6 +45,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <MyOrders />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
                     </ProtectedRoute>
                   }
                 />

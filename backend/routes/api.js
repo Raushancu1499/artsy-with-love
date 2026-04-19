@@ -212,6 +212,40 @@ router.get('/admin/users', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
+// --- User Profile API ---
+// Get current user profile
+router.get('/auth/profile', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+// Update current user profile
+router.patch('/auth/profile', verifyToken, async (req, res) => {
+  try {
+    const { name, email, phone } = req.body;
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+
+    // Check email uniqueness if changing
+    if (email) {
+      const existing = await User.findOne({ email, _id: { $ne: req.user.id } });
+      if (existing) return res.status(400).json({ error: 'Email already in use' });
+    }
+
+    const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true }).select('-password');
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to update profile' });
+  }
+});
+
 // Create Razorpay Order
 router.post('/payments/create-order', async (req, res) => {
   try {

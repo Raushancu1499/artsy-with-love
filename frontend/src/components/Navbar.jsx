@@ -136,22 +136,23 @@ function Navbar() {
                 </button>
                 
                 {isUserMenuOpen && (
-                  <div className="user-dropdown-menu animate-fade-in">
+                  <div className="user-dropdown-menu animate-fade-in" style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    position: 'absolute', 
+                    top: '100%', 
+                    right: '0', 
+                    zIndex: 1000 
+                  }}>
                     <Link to="/profile" onClick={closeMenus}>View Profile</Link>
-                    <Link to="/my-orders" onClick={closeMenus}>Order History</Link>
-                    {isAdmin && <Link to="/admin" onClick={closeMenus}>Admin Panel</Link>}
+                    {!isAdmin && <Link to="/my-orders" onClick={closeMenus}>Order History</Link>}
+                    {isAdmin && <Link to="/admin" onClick={closeMenus}>Admin Dashboard</Link>}
                     <button type="button" onClick={logout} className="dropdown-logout-btn">
                       <LogOut size={16} /> Logout
                     </button>
                   </div>
                 )}
               </div>
-              
-              {!isAdmin && (
-                <Link to="/my-orders" className="icon-btn" title="My Orders" onClick={closeMenus}>
-                  <ShoppingBag size={20} />
-                </Link>
-              )}
               
               <button 
                 type="button" 

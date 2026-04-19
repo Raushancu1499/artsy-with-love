@@ -1018,13 +1018,13 @@ function Admin() {
           )}
 
           {activeTab === 'settings' && (
-            <div className="settings-view">
+            <div className="settings-view animate-fade-in" style={{ display: 'block', visibility: 'visible', opacity: 1 }}>
               <div className="admin-header">
                 <h1>Platform Settings</h1>
                 <p>Configure your boutique&apos;s global parameters.</p>
               </div>
 
-              <div className="admin-form-container glass-card">
+              <div className="admin-form-container glass-card" style={{ display: 'block' }}>
                 <form className="admin-form">
                   <div className="form-section">
                     <h4>General Information</h4>
@@ -1040,28 +1040,28 @@ function Admin() {
                     </div>
                   </div>
 
-                  <div className="form-section" style={{ marginTop: '2rem' }}>
+                  <div className="form-section">
                     <h4>Integrations Status</h4>
                     <div className="status-list">
                       <div className="status-item">
                         <span>Razorpay Payments</span>
-                        <span className="status-badge status-progress">UPI Ready</span>
+                        <span className="pill pill-status active">UPI Ready</span>
                       </div>
                       <div className="status-item">
                         <span>Cloudinary Storage</span>
-                        <span className="status-badge status-progress">Active</span>
+                        <span className="pill pill-status active">Active</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="form-section" style={{ marginTop: '2rem' }}>
+                  <div className="form-section">
                     <h4>Appearance</h4>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '1rem' }}>Choose how the admin dashboard looks for you.</p>
+                    <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '1rem' }}>Choose how the admin dashboard looks for you.</p>
                     <div style={{ display: 'flex', gap: '1rem' }}>
                       <button 
                         type="button" 
                         className={`pill ${theme === 'light' ? 'pill-role' : ''}`} 
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: theme === 'light' ? 'var(--primary-light)' : 'transparent', color: theme === 'light' ? 'var(--primary-dark)' : 'var(--text-light)', border: '1px solid var(--border)' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: theme === 'light' ? '#fbbf24' : 'transparent', color: theme === 'light' ? '#000' : '#666', border: '1px solid #ddd' }}
                         onClick={() => theme !== 'light' && toggleTheme()}
                       >
                         <Sun size={14} /> Light
@@ -1069,7 +1069,7 @@ function Admin() {
                       <button 
                         type="button" 
                         className={`pill ${theme === 'dark' ? 'pill-role' : ''}`} 
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: theme === 'dark' ? 'var(--primary-light)' : 'transparent', color: theme === 'dark' ? 'var(--primary-dark)' : 'var(--text-light)', border: '1px solid var(--border)' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', background: theme === 'dark' ? '#fbbf24' : 'transparent', color: theme === 'dark' ? '#000' : '#666', border: '1px solid #ddd' }}
                         onClick={() => theme !== 'dark' && toggleTheme()}
                       >
                         <Moon size={14} /> Dark
@@ -1077,7 +1077,7 @@ function Admin() {
                     </div>
                   </div>
 
-                  <button type="button" className="btn btn-primary" style={{ marginTop: '2rem' }}>Save Configuration</button>
+                  <button type="button" className="auth-btn" style={{ marginTop: '2rem' }}>Save Configuration</button>
                 </form>
               </div>
             </div>

@@ -902,3 +902,58 @@
     flex-wrap: wrap;
   }
 }
+
+/* --- Settings & Form Extensions --- */
+.settings-view {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.admin-form-container {
+  max-width: 800px;
+  margin-top: 2rem;
+}
+
+.form-section {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.form-section:last-child {
+  border-bottom: none;
+}
+
+.form-section h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+}
+
+.status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+}
+
+.status-progress {
+  background: #ecfdf5;
+  color: #059669;
+}

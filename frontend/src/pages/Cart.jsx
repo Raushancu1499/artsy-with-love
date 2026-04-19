@@ -221,17 +221,14 @@ function Cart() {
         name: 'Artsy With Love',
         description: 'Handmade crochet gift order',
         order_id: orderData.id,
-        config: {
-          display: {
-            blocks: {
-              banks: {
-                name: 'Pay via UPI',
-                instruments: [{ method: 'upi' }]
-              }
-            },
-            sequence: ['block.banks'],
-            preferences: { show_default_blocks: false }
-          }
+        method: {
+          upi: true,
+          card: false,
+          netbanking: false,
+          wallet: false,
+          paylater: false,
+          emi: false,
+          bank_transfer: false
         },
         prefill: {
           name: checkoutForm.fullName,

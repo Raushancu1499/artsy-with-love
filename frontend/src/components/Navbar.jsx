@@ -110,10 +110,12 @@ const Navbar = () => {
               </button>
             )}
 
-            <Link to="/cart" className="icon-btn cart-btn" onClick={closeMenus}>
-              <ShoppingBag size={22} />
-              {getCartCount() > 0 && <span className="cart-badge">{getCartCount()}</span>}
-            </Link>
+            {!isAdmin && (
+              <Link to="/cart" className="icon-btn cart-btn" onClick={closeMenus}>
+                <ShoppingBag size={22} />
+                {getCartCount() > 0 && <span className="cart-badge">{getCartCount()}</span>}
+              </Link>
+            )}
 
             {isAuthenticated ? (
               <div className="user-nav-group">

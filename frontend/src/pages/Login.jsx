@@ -1,43 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import API_BASE_URL from '../config/api';
 import './Login.css';
-import { Eye, EyeOff, Heart, ArrowRight, Loader, Sparkles, Star } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Loader } from 'lucide-react';
 
-const PARTICLES = ['🧸','🌸','🎀','✨','🌷','💝','🧶','🎁','🌼','💌'];
+const EMOJIS = ['🧸','🌸','🎀','✨','🌷','💝','🧶','🎁','🌼','💌','🌹','🎊'];
 
 function Login() {
   const [isRegister, setIsRegister] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPw, setShowPw] = useState(false);
+  const [focused, setFocused] = useState('');
 
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
     setLoading(true);
     const endpoint = isRegister ? '/api/auth/register' : '/api/auth/login';
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Authentication failed');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Authentication failed');
       if (!isRegister) {
         login(data.user, data.token);
-        if (data.user.role === 'admin') navigate('/admin', { replace: true });
-        else navigate(from, { replace: true });
+        navigate(data.user.role === 'admin' ? '/admin' : from, { replace: true });
       } else {
         setIsRegister(false);
         setFormData({ name: '', email: '', password: '' });
@@ -51,177 +51,194 @@ function Login() {
   };
 
   const switchMode = () => {
-    setIsRegister(!isRegister);
+    setIsRegister(p => !p);
     setError('');
     setFormData({ name: '', email: '', password: '' });
   };
 
   const isSuccess = error.startsWith('success:');
-  const errorMsg = isSuccess ? error.replace('success:', '') : error;
+  const msg = isSuccess ? error.replace('success:', '') : error;
 
   return (
-    <div className="lp-root">
-      {/* ── LEFT PANEL: Visual ── */}
-      <div className="lp-visual">
-        <img src="/login_panel.png" alt="Handmade crochet gifts" className="lp-visual-img" />
-        <div className="lp-visual-overlay" />
+    <div className="lx-root">
 
-        {/* Floating badges on photo */}
-        <div className="lp-badge lp-badge-1">
-          <Star size={14} fill="currentColor" /> 100% Handcrafted
-        </div>
-        <div className="lp-badge lp-badge-2">
-          <Heart size={14} fill="currentColor" /> Made with Love
-        </div>
-        <div className="lp-badge lp-badge-3">
-          <Sparkles size={14} /> Custom Gifting
-        </div>
-
-        {/* Brand on photo */}
-        <div className="lp-visual-brand">
-          <Heart size={28} fill="currentColor" className="lp-visual-brand-icon" />
-          <span>Artsy With Love</span>
-        </div>
-
-        <p className="lp-visual-tagline">
-          "Where every stitch carries a story worth gifting."
-        </p>
-      </div>
-
-      {/* ── RIGHT PANEL: Form ── */}
-      <div className="lp-form-panel">
-        {/* Animated orbs */}
-        <div className="lp-blob lp-blob-1" />
-        <div className="lp-blob lp-blob-2" />
-        <div className="lp-blob lp-blob-3" />
+      {/* ── LEFT: Immersive Branding Panel ── */}
+      <div className="lx-brand-panel">
+        <img src="/login_panel.png" className="lx-panel-img" alt="" />
+        <div className="lx-panel-overlay" />
 
         {/* Floating emoji particles */}
-        <div className="lp-particles" aria-hidden="true">
-          {PARTICLES.map((emoji, i) => (
-            <span key={i} className={`lp-particle lp-particle-${i + 1}`}>{emoji}</span>
+        <div className="lx-particles" aria-hidden="true">
+          {EMOJIS.map((e, i) => (
+            <span key={i} className="lx-particle" style={{
+              left: `${8 + i * 7.5}%`,
+              animationDelay: `${i * 0.7}s`,
+              animationDuration: `${6 + (i % 4) * 2}s`
+            }}>{e}</span>
           ))}
         </div>
 
-        <div className="lp-form-wrap" key={isRegister ? 'reg' : 'log'}>
-          {/* Header */}
-          <Link to="/" className="lp-back-link">← Back to Shop</Link>
+        {/* Orbs */}
+        <div className="lx-orb lx-orb-a" />
+        <div className="lx-orb lx-orb-b" />
 
-          <div className="lp-heading">
-            <div className="lp-mode-pill">
-              <button
-                type="button"
-                className={`lp-mode-btn ${!isRegister ? 'active' : ''}`}
-                onClick={() => { if (isRegister) switchMode(); }}
-              >Sign In</button>
-              <button
-                type="button"
-                className={`lp-mode-btn ${isRegister ? 'active' : ''}`}
-                onClick={() => { if (!isRegister) switchMode(); }}
-              >Register</button>
-            </div>
+        {/* Brand mark */}
+        <div className="lx-brand-mark">
+          <div className="lx-brand-icon">💗</div>
+          <span className="lx-brand-name">Artsy With Love</span>
+        </div>
 
-            <h1 className="lp-title">
-              {isRegister ? 'Create your account ✨' : 'Welcome back 💝'}
+        {/* Hero text on panel */}
+        <div className="lx-panel-copy">
+          <h2 className="lx-panel-headline">
+            Every piece<br />tells a story.
+          </h2>
+          <p className="lx-panel-sub">
+            Handcrafted crochet gifts made with love, warmth, and intention.
+          </p>
+        </div>
+
+        {/* Trust pills */}
+        <div className="lx-trust-pills">
+          <span className="lx-pill">🧸 100% Handmade</span>
+          <span className="lx-pill">🎀 Gift Ready</span>
+          <span className="lx-pill">✨ Custom Orders</span>
+        </div>
+      </div>
+
+      {/* ── RIGHT: Form Panel ── */}
+      <div className="lx-form-panel">
+        {/* Soft ambient blobs */}
+        <div className="lx-blob lx-blob-1" />
+        <div className="lx-blob lx-blob-2" />
+
+        <div className="lx-form-wrap" key={isRegister ? 'r' : 'l'}>
+          <Link to="/" className="lx-back">← Back to shop</Link>
+
+          {/* Toggle tabs */}
+          <div className="lx-tabs">
+            <button
+              className={`lx-tab ${!isRegister ? 'lx-tab--active' : ''}`}
+              onClick={() => isRegister && switchMode()}
+            >Sign In</button>
+            <button
+              className={`lx-tab ${isRegister ? 'lx-tab--active' : ''}`}
+              onClick={() => !isRegister && switchMode()}
+            >Create Account</button>
+            <div className="lx-tab-indicator" style={{ transform: isRegister ? 'translateX(100%)' : 'translateX(0)' }} />
+          </div>
+
+          {/* Heading */}
+          <div className="lx-heading">
+            <h1 className="lx-title">
+              {isRegister ? 'Join the family ✨' : 'Welcome back 💝'}
             </h1>
-            <p className="lp-subtitle">
+            <p className="lx-subtitle">
               {isRegister
-                ? 'Join a community that celebrates handmade artistry.'
+                ? 'Create your account and start your artisanal journey.'
                 : 'Sign in to continue your artisanal journey.'}
             </p>
           </div>
 
-          {/* Status message */}
+          {/* Alert */}
           {error && (
-            <div className={`lp-alert ${isSuccess ? 'lp-alert-success' : 'lp-alert-error'}`}>
-              <span>{isSuccess ? '✓' : '⚠'}</span> {errorMsg}
+            <div className={`lx-alert ${isSuccess ? 'lx-alert--ok' : 'lx-alert--err'}`}>
+              {isSuccess ? '✓' : '⚠'} {msg}
             </div>
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="lp-form" noValidate>
+          <form onSubmit={handleSubmit} className="lx-form" noValidate>
+
             {isRegister && (
-              <div className="lp-field-group">
-                <label className="lp-label" htmlFor="lp-name">Full Name</label>
+              <div className={`lx-field ${focused === 'name' || formData.name ? 'lx-field--active' : ''}`}>
                 <input
-                  className="lp-input"
+                  className="lx-input"
                   type="text"
                   name="name"
-                  id="lp-name"
-                  placeholder="e.g. Raushan Kumar"
+                  id="lx-name"
+                  placeholder=" "
                   required
                   value={formData.name}
                   onChange={handleChange}
+                  onFocus={() => setFocused('name')}
+                  onBlur={() => setFocused('')}
                   autoComplete="name"
                 />
+                <label className="lx-label" htmlFor="lx-name">Full Name</label>
+                <div className="lx-field-line" />
               </div>
             )}
 
-            <div className="lp-field-group">
-              <label className="lp-label" htmlFor="lp-email">Email Address</label>
+            <div className={`lx-field ${focused === 'email' || formData.email ? 'lx-field--active' : ''}`}>
               <input
-                className="lp-input"
+                className="lx-input"
                 type="email"
                 name="email"
-                id="lp-email"
-                placeholder="you@example.com"
+                id="lx-email"
+                placeholder=" "
                 required
                 value={formData.email}
                 onChange={handleChange}
+                onFocus={() => setFocused('email')}
+                onBlur={() => setFocused('')}
                 autoComplete="email"
               />
+              <label className="lx-label" htmlFor="lx-email">Email Address</label>
+              <div className="lx-field-line" />
             </div>
 
-            <div className="lp-field-group">
-              <div className="lp-label-row">
-                <label className="lp-label" htmlFor="lp-password">Password</label>
-                {!isRegister && <button type="button" className="lp-forgot">Forgot password?</button>}
-              </div>
-              <div className="lp-input-wrap">
-                <input
-                  className="lp-input"
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  id="lp-password"
-                  placeholder="••••••••"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  autoComplete={isRegister ? 'new-password' : 'current-password'}
-                />
-                <button
-                  type="button"
-                  className="lp-pw-eye"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
-                  aria-label={showPassword ? 'Hide' : 'Show'}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
+            <div className={`lx-field ${focused === 'password' || formData.password ? 'lx-field--active' : ''}`}>
+              <input
+                className="lx-input"
+                type={showPw ? 'text' : 'password'}
+                name="password"
+                id="lx-pw"
+                placeholder=" "
+                required
+                value={formData.password}
+                onChange={handleChange}
+                onFocus={() => setFocused('password')}
+                onBlur={() => setFocused('')}
+                autoComplete={isRegister ? 'new-password' : 'current-password'}
+                style={{ paddingRight: '3rem' }}
+              />
+              <label className="lx-label" htmlFor="lx-pw">Password</label>
+              <div className="lx-field-line" />
+              <button
+                type="button"
+                className="lx-eye"
+                onClick={() => setShowPw(p => !p)}
+                tabIndex={-1}
+              >
+                {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
+              </button>
             </div>
 
-            <button type="submit" className="lp-submit" disabled={loading}>
+            {!isRegister && (
+              <div className="lx-forgot-row">
+                <button type="button" className="lx-forgot">Forgot password?</button>
+              </div>
+            )}
+
+            <button type="submit" className="lx-submit" disabled={loading}>
               {loading
-                ? <><Loader size={18} className="lp-spin" /> Processing...</>
+                ? <><Loader size={18} className="lx-spin" /> Processing</>
                 : <>{isRegister ? 'Create Account' : 'Sign In'} <ArrowRight size={18} /></>
               }
+              <span className="lx-btn-shimmer" />
             </button>
           </form>
 
           {/* Divider */}
-          <div className="lp-divider"><span>or</span></div>
+          <div className="lx-divider"><span>Secured by Artsy With Love</span></div>
 
           {/* Trust badges */}
-          <div className="lp-trust">
-            <span>🔒 Secure Login</span>
-            <span>🧸 100+ Happy Customers</span>
-            <span>💌 Artisan Verified</span>
+          <div className="lx-badges">
+            <div className="lx-badge-item">🔒<span>Encrypted</span></div>
+            <div className="lx-badge-item">🛡️<span>Secure</span></div>
+            <div className="lx-badge-item">✅<span>Trusted</span></div>
           </div>
-
-          {/* Footer */}
-          <p className="lp-footer-note">
-            Handcrafted with 🧶 &amp; love · <Link to="/about">Our Story</Link>
-          </p>
         </div>
       </div>
     </div>

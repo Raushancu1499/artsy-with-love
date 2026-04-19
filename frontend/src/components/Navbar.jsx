@@ -8,7 +8,8 @@ import {
   LogOut, 
   Heart,
   Sun,
-  Moon
+  Moon,
+  LayoutDashboard
 } from 'lucide-react';
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
